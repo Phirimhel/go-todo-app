@@ -10,6 +10,14 @@ YELLOW := \033[0;33m
 GREEN  := \033[0;32m
 NC     := \033[0m 
 
+
+# run app
+app-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	go mod tidy && \
+	go run cmd/todoapp/main.go
+
+
 # postgres 
  
 env-up: 
