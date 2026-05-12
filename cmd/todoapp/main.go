@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
+	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/Phirimhel/go-todo-app/internal/core/transport/http/server"
 	users_transport_http "github.com/Phirimhel/go-todo-app/internal/features/users/transport/http"
 	"go.uber.org/zap"
@@ -32,6 +33,10 @@ func main() {
 	httpServer := core_http_server.NewHTTPserver(
 		core_http_server.NewConfigMust(),
 		logger,
+		core_http_midleware.RequestID(),
+		core_http_midleware.Logger(logger),
+		core_http_midleware.Panic(),
+		core_http_midleware.Trace(),
 	)
 
 	httpServer.RegisterApiRoutes(apiVersionRouter)
