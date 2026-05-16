@@ -27,7 +27,7 @@ func (h *HTTPResponseHandler) JSONResponse(responseBody any, statusCode int) {
 
 	h.rw.WriteHeader(statusCode)
 
-	if err := json.NewEncoder(h.rw).Encode(responseBody); err != nil {
+	if err := json.NewEncoder(h.rw).Encode(&responseBody); err != nil {
 		h.log.Error("write HTTP response", zap.Error(err))
 	}
 
@@ -48,7 +48,7 @@ func (h *HTTPResponseHandler) ErrorResponse(err error, msg string) {
 		statusCode = http.StatusConflict
 		logFunc = h.log.Debug
 	case errors.Is(err, core_errors.ErrInvalidArgument):
-		statusCode = http.StatusConflict
+		statusCode = http.StatusBadRequest
 		logFunc = h.log.Warn
 	default:
 		statusCode = http.StatusInternalServerError
@@ -71,7 +71,7 @@ func (h *HTTPResponseHandler) errorResponse(statusCode int, err error, msg strin
 
 	responseBody := map[string]string{
 		"message": msg,
-		"err":     err.Error(),
+		"error":   err.Error(),
 	}
 
 	h.JSONResponse(responseBody, statusCode)
