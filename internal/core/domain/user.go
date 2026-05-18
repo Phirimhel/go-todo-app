@@ -44,7 +44,9 @@ func (u *User) Validation() error {
 	}
 
 	if u.PhoneNumber != nil {
-		phoneLength := len([]rune(*u.PhoneNumber))
+
+		phoneNumber := *u.PhoneNumber
+		phoneLength := len([]rune(phoneNumber))
 		if phoneLength < 8 || phoneLength > 15 {
 			return fmt.Errorf(
 				"invalid PhoneNumber length: %d, %w",
@@ -52,16 +54,16 @@ func (u *User) Validation() error {
 				core_errors.ErrInvalidArgument,
 			)
 		}
-	}
 
-	re := regexp.MustCompile(`^\+[0-9]+$`)
-	phoneNumber := *u.PhoneNumber
-	if re.MatchString(phoneNumber) {
-		return fmt.Errorf(
-			"invalid PhoneNumber format: %v, %w",
-			phoneNumber,
-			core_errors.ErrInvalidArgument,
-		)
+		re := regexp.MustCompile(`^\+[0-9]+$`)
+		if !re.MatchString(phoneNumber) {
+			return fmt.Errorf(
+				"invalid PhoneNumber format: %v, %w",
+				phoneNumber,
+				core_errors.ErrInvalidArgument,
+			)
+		}
+
 	}
 
 	return nil
