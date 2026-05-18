@@ -1,15 +1,23 @@
 package users_postgres_repository
 
-import core_postgres_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool"
+import (
+	"context"
 
-type UsersRepository struct {
+	"github.com/Phirimhel/go-todo-app/internal/core/domain"
+	core_postgres_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool"
+)
+
+type UsersRepository interface {
+	CreateUser(ctx context.Context, user domain.User) (domain.User, error)
+	GetUsers(ctx context.Context, limit, offset *int) ([]domain.User, error)
+}
+
+type usersRepository struct {
 	pool core_postgres_pool.Pool
 }
 
-type Repository interface{}
-
-func NewRepository(pool core_postgres_pool.Pool) *UsersRepository {
-	return &UsersRepository{
+func NewRepository(pool core_postgres_pool.Pool) *usersRepository {
+	return &usersRepository{
 		pool: pool,
 	}
 }

@@ -4,18 +4,20 @@ import (
 	"context"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
+	users_postgres_repository "github.com/Phirimhel/go-todo-app/internal/features/users/repository/postgres"
 )
 
-type UserService struct {
-	UsersRepository UsersRepository
-}
-
-type UsersRepository interface {
+type UsersService interface {
 	CreateUser(ctx context.Context, user domain.User) (domain.User, error)
+	GetUsers(ctx context.Context, limit, offset *int) ([]domain.User, error)
 }
 
-func NewUserService(repository UsersRepository) *UserService {
-	return &UserService{
+type userService struct {
+	UsersRepository users_postgres_repository.UsersRepository
+}
+
+func NewUserService(repository users_postgres_repository.UsersRepository) *userService {
+	return &userService{
 		UsersRepository: repository,
 	}
 }

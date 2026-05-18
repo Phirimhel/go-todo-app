@@ -7,7 +7,7 @@ import (
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 )
 
-func (u *UserService) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+func (u *userService) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
 
 	// validate
 	if err := user.Validation(); err != nil {
