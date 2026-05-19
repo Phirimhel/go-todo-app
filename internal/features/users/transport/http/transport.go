@@ -9,17 +9,17 @@ type UsersHTTPHandler struct {
 	usersService users_service.UsersService
 }
 
-func (u *UsersHTTPHandler) Routes() []core_http_server.Route {
+func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 	return []core_http_server.Route{
 		{
 			Method: "POST",
 			Path:   "/users",
-			Hanler: u.CreateUser,
+			Hanler: h.CreateUser,
 		},
 		{
 			Method: "GET",
 			Path:   "/users",
-			Hanler: u.CreateUser,
+			Hanler: h.GetUsers,
 		},
 	}
 }

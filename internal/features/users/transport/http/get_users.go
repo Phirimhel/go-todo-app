@@ -16,7 +16,7 @@ func (h *UsersHTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	log := core_logger.FromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
-	log.Debug("invoce get user handler")
+	log.Debug("invoce get users handler")
 
 	limit, offset, err := getLimitOffsetQueryParams(r)
 	if err != nil {
@@ -41,7 +41,7 @@ func getLimitOffsetQueryParams(r *http.Request) (*int, *int, error) {
 		return nil, nil, fmt.Errorf("get limit query params: %w", err)
 	}
 
-	offser, err := core_http_utils.GetQueryParams(r, "offser")
+	offser, err := core_http_utils.GetQueryParams(r, "offset")
 	if err != nil {
 		return nil, nil, fmt.Errorf("get offset query params: %w", err)
 	}
