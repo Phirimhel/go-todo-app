@@ -8,7 +8,7 @@ import (
 	core_errors "github.com/Phirimhel/go-todo-app/internal/core/errors"
 )
 
-func (u *userService) GetUsers(ctx context.Context, limit, offset *int) ([]domain.User, error) {
+func (s *userService) GetUsers(ctx context.Context, limit, offset *int) ([]domain.User, error) {
 	if limit != nil && *limit < 0 {
 		return nil, fmt.Errorf("limit must be non-negative: %w", core_errors.ErrInvalidArgument)
 	}
@@ -17,7 +17,7 @@ func (u *userService) GetUsers(ctx context.Context, limit, offset *int) ([]domai
 		return nil, fmt.Errorf("limit must be non-negative: %w", core_errors.ErrInvalidArgument)
 	}
 
-	userDomains, err := u.GetUsers(ctx, limit, offset)
+	userDomains, err := s.UsersRepository.GetUsers(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get users from repository %w", err)
 	}

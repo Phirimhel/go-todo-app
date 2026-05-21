@@ -17,10 +17,6 @@ func (r *usersRepository) CreateUser(ctx context.Context, user domain.User) (dom
 		RETURNING id, version, full_name, phone_number;
 	`
 
-	if r.pool == nil {
-		panic("users repository pool is nil")
-	}
-
 	row := r.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber)
 
 	var model UserModel
