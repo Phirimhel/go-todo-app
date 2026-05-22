@@ -7,17 +7,17 @@ import (
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 )
 
-func (r *usersRepository) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+func (r *usersRepository) PatchUser(ctx context.Context, user domain.User) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `
-		INSERT INTO todoapp.users (full_name, phone_number) 
-		VALUES ($1, $2)
-		RETURNING id, version, full_name, phone_number;
+		UPDATE table_name
+		SET full_name = $1, phone_number = $2
+		WHERE id = $3;
 	`
 
-	row := r.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber)
+	row := r.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber, user.ID)
 
 	var userModel UserModel
 	if err := row.Scan(

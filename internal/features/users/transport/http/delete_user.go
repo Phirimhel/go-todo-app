@@ -8,14 +8,12 @@ import (
 	core_http_utils "github.com/Phirimhel/go-todo-app/internal/core/transport/http/utils"
 )
 
-type GetUserResponse UserDTOResponse
-
-func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+func (h *UsersHTTPHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.GetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
-	log.Debug("invoce get user handler")
+	log.Debug("invoce delete user handler")
 
 	userID, err := core_http_utils.GetPathValue(r, "id")
 	if err != nil {
@@ -23,13 +21,10 @@ func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDomain, err := h.usersService.GetUser(ctx, userID)
-	if err != nil {
-		responseHandler.ErrorResponse(err, "failed to get user")
+	if err := h.usersService.DeleteUser(ctx, userID); err != nil {
+		responseHandler.ErrorResponse(err, "failed to delete user")
 		return
 	}
 
-	userDTO := userDTOFromDomain(userDomain)
-	userResponse := GetUserResponse(userDTO)
-	responseHandler.JSONResponse(userResponse, http.StatusOK)
+	responseHandler.NoContentResponse(http.StatusNoContent)
 }

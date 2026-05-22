@@ -7,13 +7,13 @@ import (
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 )
 
-func (s *userService) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+func (s *userService) PatchUser(ctx context.Context, user domain.User) (domain.User, error) {
 
 	if err := user.Validation(); err != nil {
 		return domain.User{}, fmt.Errorf("[service]: validate user domen: %w", err)
 	}
 
-	user, err := s.UsersRepository.CreateUser(ctx, user)
+	user, err := s.UsersRepository.PatchUser(ctx, user)
 	if err != nil {
 		return domain.User{}, fmt.Errorf("[service]: create user repository: %w", err)
 	}

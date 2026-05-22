@@ -5,23 +5,13 @@ import (
 	"fmt"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
-	core_errors "github.com/Phirimhel/go-todo-app/internal/core/errors"
 )
 
-func (s *userService) GetUsers(ctx context.Context, limit, offset *int) ([]domain.User, error) {
-	if limit != nil && *limit < 0 {
-		return nil, fmt.Errorf("limit must be non-negative: %w", core_errors.ErrInvalidArgument)
-	}
+func (s *userService) GetUser(ctx context.Context, id int) (domain.User, error) {
 
-	if offset != nil && *offset < 0 {
-		return nil, fmt.Errorf("limit must be non-negative: %w", core_errors.ErrInvalidArgument)
-	}
-
-	userDomains, err := s.UsersRepository.GetUsers(ctx, limit, offset)
+	user, err := s.UsersRepository.GetUser(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get users from repository %w", err)
+		return domain.User{}, fmt.Errorf("[service]: failed to get user from repository: %w", err)
 	}
-
-	return userDomains, nil
-
+	return user, err
 }
