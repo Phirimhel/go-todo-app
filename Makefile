@@ -18,6 +18,9 @@ app-run:
 	go mod tidy && \
 	go run cmd/todoapp/main.go
 
+clear-logs:
+	rm -f logs/*
+
 
 # postgres 
  

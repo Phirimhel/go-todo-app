@@ -21,6 +21,16 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Path:   "/users",
 			Hanler: h.GetUsers,
 		},
+		{
+			Method: "GET",
+			Path:   "/users/{id}",
+			Hanler: h.GetUser,
+		},
+		{
+			Method: "DELETE",
+			Path:   "/users/{id}",
+			Hanler: h.DeleteUser,
+		},
 	}
 }
 

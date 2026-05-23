@@ -56,7 +56,7 @@ func Panic() Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			ctx := r.Context()
-			log := core_logger.FromContext(ctx)
+			log := core_logger.GetLoggerFromContext(ctx)
 			responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 			defer func() {
@@ -75,7 +75,7 @@ func Trace() Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			ctx := r.Context()
-			log := core_logger.FromContext(ctx)
+			log := core_logger.GetLoggerFromContext(ctx)
 
 			before := time.Now().UTC()
 

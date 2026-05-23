@@ -2,48 +2,48 @@ package users_postgres_repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
+	core_errors "github.com/Phirimhel/go-todo-app/internal/core/errors"
+	"github.com/jackc/pgx/v5"
 )
 
-func (r *usersRepository) GetUsers(ctx context.Context, limit, offset *int) ([]domain.User, error) {
+func (r *usersRepository) GetUser(ctx context.Context, id int) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `
-		SELECT ID, Version, full_name, phone_number FROM todoapp.users
-		ORDER BY id ASC
-		LIMIT $1 
-		OFFSET $2;
+	SELECT id, Version, full_name, phone_number FROM todoapp.users
+	WHERE id = $1 
 	`
-	rows, err := r.pool.Query(ctx, query, limit, offset)
-	if err != nil {
-		return nil, fmt.Errorf("select users rows: %w", err)
-	}
-	defer rows.Close()
 
-	var userModels []UserModel
-	for rows.Next() {
+	row := r.pool.QueryRow(ctx, query, id)
 
-		var model UserModel
-		if err := rows.Scan(
-			&model.ID,
-			&model.Version,
-			&model.FullName,
-			&model.PhoneNumber,
-		); err != nil {
-			return nil, fmt.Errorf("scan model of select users rows: %w", err)
+	var userModel UserModel
+	if err := row.Scan(
+		&userModel.ID,
+		&userModel.Version,
+		&userModel.FullName,
+		&userModel.PhoneNumber,
+	); err != nil {
+
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.User{}, fmt.Errorf(
+				"[repo]: user with id='%d' %w",
+				id,
+				core_errors.ErrNotFound,
+			)
 		}
 
-		userModels = append(userModels, model)
+		return domain.User{}, fmt.Errorf(
+			"[repo]: scan model of selected users row: %w",
+			err,
+		)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("next rows: %w", err)
-	}
+	userDomen := userDomainFromUserModel(userModel)
 
-	userDomains := userDomainFromUserModel(userModels)
-
-	return userDomains, nil
+	return userDomen, nil
 }

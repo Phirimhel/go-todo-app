@@ -13,7 +13,7 @@ type GetUsersResponse []UserDTOResponse
 
 func (h *UsersHTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := core_logger.FromContext(ctx)
+	log := core_logger.GetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 	log.Debug("invoce get users handler")
@@ -26,7 +26,7 @@ func (h *UsersHTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	userDomains, err := h.usersService.GetUsers(ctx, limit, offset)
 	if err != nil {
-		responseHandler.ErrorResponse(err, "failed to get user domains []userDomains")
+		responseHandler.ErrorResponse(err, "failed to get users")
 		return
 	}
 

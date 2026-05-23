@@ -16,7 +16,7 @@ type Logger struct {
 	file *os.File
 }
 
-func FromContext(ctx context.Context) *Logger {
+func GetLoggerFromContext(ctx context.Context) *Logger {
 	log, ok := ctx.Value("log").(*Logger)
 
 	if !ok {

@@ -17,8 +17,8 @@ type CreateUserRequest struct {
 type CreateUserResponse UserDTOResponse
 
 func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-
-	log := core_logger.FromContext(r.Context())
+	ctx := r.Context()
+	log := core_logger.GetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 	log.Debug("invoce create user handler")
@@ -30,7 +30,7 @@ func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newUserDomain := domainFromDTO(request)
-	userDomain, err := h.usersService.CreateUser(r.Context(), newUserDomain)
+	userDomain, err := h.usersService.CreateUser(ctx, newUserDomain)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to create user")
 		return
