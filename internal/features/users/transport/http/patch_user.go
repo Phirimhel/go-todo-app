@@ -5,12 +5,15 @@ import (
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
+	core_http_request "github.com/Phirimhel/go-todo-app/internal/core/transport/http/request"
 	core_http_response "github.com/Phirimhel/go-todo-app/internal/core/transport/http/response"
+	core_http_types "github.com/Phirimhel/go-todo-app/internal/core/transport/http/types"
+	core_http_utils "github.com/Phirimhel/go-todo-app/internal/core/transport/http/utils"
 )
 
 type PatchUserRequest struct {
-	FullName    *string `json:"full_name" validate:"required,min=3,max=100"`
-	PhoneNumber *string `json:"phone_number" validate:"omitempty,e164"`
+	FullName    core_http_types.Nullable[string] `json:"full_name"`
+	PhoneNumber core_http_types.Nullable[string] `json:"phone_number"`
 }
 
 type PatchUserResponse UserDTOResponse
@@ -20,18 +23,27 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	log := core_logger.GetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
-	log.Debug("invoce patch user handler")
+	userID, err := core_http_utils.GetPathValue(r, "id")
+	if err != nil {
+		responseHandler.ErrorResponse(err, "failed to get user id path value")
+		return
+	}
+
+	_ = userID
+
+	var request PatchUserRequest
+	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
+		responseHandler.ErrorResponse(err, "failed to decode or validate request")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 
 }
 
-func domainFromPatchDTO(dto PatchUserRequest) domain.User {
-	var userDomain domain.User
-	if dto.FullName != nil {
-		userDomain.FullName = *dto.FullName
+func userPatchFromRequest(request PatchUserRequest) domain.UserPatch {
+	return domain.UserPatch{
+		FullName:    request.FullName.Nullable,
+		PhoneNumber: request.PhoneNumber.Nullable,
 	}
-
-	if dto.PhoneNumber != nil {
-		userDomain.FullName = *dto.PhoneNumber
-	}
-	return userDomain
 }
