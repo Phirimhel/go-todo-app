@@ -32,7 +32,7 @@ func NewUser(ID, Version int, FullName string, PhoneNumber *string) User {
 	}
 }
 
-func (u *User) Validation() error {
+func (u *User) Validate() error {
 
 	fullNameLength := len([]rune(u.FullName))
 	if fullNameLength < 3 || fullNameLength > 100 {
@@ -70,8 +70,9 @@ func (u *User) Validation() error {
 }
 
 func (u *User) ApplyPatch(patch UserPatch) error {
+
 	if err := patch.Validate(); err != nil {
-		return fmt.Errorf("failed validate user patch: %w", err)
+		return fmt.Errorf("[user/domain]: failed validate user patch: %w", err)
 	}
 
 	tmp := *u
@@ -79,9 +80,11 @@ func (u *User) ApplyPatch(patch UserPatch) error {
 		tmp.FullName = *patch.FullName.Value
 	}
 	if patch.PhoneNumber.Set {
-		tmp.FullName = *patch.PhoneNumber.Value
+		tmp.PhoneNumber = patch.PhoneNumber.Value
 	}
-
+	if err := tmp.Validate(); err != nil {
+		return fmt.Errorf("[user/domain]: failed validate user: %w", err)
+	}
 	*u = tmp
 
 	return nil

@@ -28,3 +28,7 @@ func (n *Nullable[T]) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
+
+func (p *Nullable[T]) Domain() domain.Nullable[T] {
+	return domain.Nullable[T]{}
+}

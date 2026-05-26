@@ -1,9 +1,9 @@
 package users_transport_http
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
 	core_http_request "github.com/Phirimhel/go-todo-app/internal/core/transport/http/request"
 	core_http_response "github.com/Phirimhel/go-todo-app/internal/core/transport/http/response"
@@ -26,7 +26,10 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := core_http_utils.GetPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to get user id path value")
+		return
 	}
+
+	_ = userID
 
 	var request PatchUserRequest
 	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
@@ -34,9 +37,13 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("request ****************", request)
 	w.WriteHeader(http.StatusOK)
 
-	//log.Debug("invoce patch user handler")
+}
 
+func userPatchFromRequest(request PatchUserRequest) domain.UserPatch {
+	return domain.UserPatch{
+		FullName:    request.FullName.Nullable,
+		PhoneNumber: request.PhoneNumber.Nullable,
+	}
 }
