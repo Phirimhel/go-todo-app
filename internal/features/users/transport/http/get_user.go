@@ -28,7 +28,6 @@ func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		responseHandler.ErrorResponse(err, "failed to get user")
 		return
 	}
-
 	userDTO := userDTOFromDomain(userDomain)
 	userResponse := GetUserResponse(userDTO)
 	responseHandler.JSONResponse(userResponse, http.StatusOK)
