@@ -1,6 +1,7 @@
 package users_transport_http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
@@ -36,6 +37,8 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		responseHandler.ErrorResponse(err, "failed to decode or validate request")
 		return
 	}
+
+	log.Debug(fmt.Sprintf("user_name: %v, phone_number: %v", request.FullName, request.PhoneNumber))
 
 	w.WriteHeader(http.StatusOK)
 
