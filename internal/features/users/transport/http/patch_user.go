@@ -1,7 +1,6 @@
 package users_transport_http
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
@@ -17,7 +16,7 @@ type PatchUserRequest struct {
 	PhoneNumber core_http_types.Nullable[string] `json:"phone_number"`
 }
 
-type PatchUserResponse UserDTOResponse
+type PatchedUserResponse UserDTOResponse
 
 func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -30,23 +29,27 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = userID
-
 	var request PatchUserRequest
 	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
 		responseHandler.ErrorResponse(err, "failed to decode or validate request")
 		return
 	}
 
-	log.Debug(fmt.Sprintf("user_name: %v, phone_number: %v", request.FullName, request.PhoneNumber))
+	userPatch := userPatchFromRequest(request)
+	userDomain, err := h.usersService.PatchUser(ctx, userID, userPatch)
+	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
+		responseHandler.ErrorResponse(err, "failed to patch user")
+		return
+	}
 
-	w.WriteHeader(http.StatusOK)
-
+	userDTO := userDTOFromDomain(userDomain)
+	patchedUserResponse := PatchedUserResponse(userDTO)
+	responseHandler.JSONResponse(patchedUserResponse, http.StatusOK)
 }
 
 func userPatchFromRequest(request PatchUserRequest) domain.UserPatch {
 	return domain.UserPatch{
-		FullName:    request.FullName.Nullable,
-		PhoneNumber: request.PhoneNumber.Nullable,
+		FullName:    request.FullName.ToDomain(),
+		PhoneNumber: request.PhoneNumber.ToDomain(),
 	}
 }

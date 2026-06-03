@@ -2,21 +2,15 @@ package users_service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 )
 
-func (s *userService) PatchUser(ctx context.Context, user domain.User) (domain.User, error) {
+func (s *userService) PatchUser(ctx context.Context, id int, patch domain.UserPatch) (domain.User, error) {
 
-	if err := user.Validate(); err != nil {
-		return domain.User{}, fmt.Errorf("[service]: validate user domen: %w", err)
-	}
+	// 1. get user by id
+	// 2. apply patch to user
+	// 3. save patched user in repository
 
-	user, err := s.UsersRepository.PatchUser(ctx, user)
-	if err != nil {
-		return domain.User{}, fmt.Errorf("[service]: create user repository: %w", err)
-	}
-
-	return user, nil
+	return domain.User{}, nil
 }
