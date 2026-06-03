@@ -12,7 +12,7 @@ type UsersService interface {
 	GetUsers(ctx context.Context, limit, offset *int) ([]domain.User, error)
 	GetUser(ctx context.Context, id int) (domain.User, error)
 	DeleteUser(ctx context.Context, id int) error
-	PatchUser(ctx context.Context, user domain.User) (domain.User, error)
+	PatchUser(ctx context.Context, id int, patch domain.UserPatch) (domain.User, error)
 }
 
 type userService struct {

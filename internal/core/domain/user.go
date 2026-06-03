@@ -32,7 +32,7 @@ func NewUser(ID, Version int, FullName string, PhoneNumber *string) User {
 	}
 }
 
-func (u *User) Validate() error {
+func (u *User) ValidateUser() error {
 
 	fullNameLength := len([]rune(u.FullName))
 	if fullNameLength < 3 || fullNameLength > 100 {
@@ -71,7 +71,7 @@ func (u *User) Validate() error {
 
 func (u *User) ApplyPatch(patch UserPatch) error {
 
-	if err := patch.Validate(); err != nil {
+	if err := patch.ValidatePatch(); err != nil {
 		return fmt.Errorf("[user/domain]: failed validate user patch: %w", err)
 	}
 
@@ -82,7 +82,7 @@ func (u *User) ApplyPatch(patch UserPatch) error {
 	if patch.PhoneNumber.Set {
 		tmp.PhoneNumber = patch.PhoneNumber.Value
 	}
-	if err := tmp.Validate(); err != nil {
+	if err := tmp.ValidateUser(); err != nil {
 		return fmt.Errorf("[user/domain]: failed validate user: %w", err)
 	}
 	*u = tmp
@@ -95,7 +95,7 @@ type UserPatch struct {
 	PhoneNumber Nullable[string]
 }
 
-func (p *UserPatch) Validate() error {
+func (p *UserPatch) ValidatePatch() error {
 	if p.FullName.Set && p.FullName.Value == nil {
 		return fmt.Errorf(
 			"FullNamme can't be patched to null %w",
