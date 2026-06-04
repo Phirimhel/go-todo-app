@@ -3,6 +3,7 @@ package core_http_midleware
 import (
 	"context"
 	"net/http"
+	"runtime/debug"
 	"time"
 
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
@@ -61,7 +62,8 @@ func Panic() Middleware {
 
 			defer func() {
 				if p := recover(); p != nil {
-					responseHandler.PanicResponse(p, "durring handle HTTP request got unexpected panic")
+					stack := debug.Stack()
+					responseHandler.PanicResponse(p, "durring handle HTTP request got unexpected panic", stack)
 				}
 			}()
 

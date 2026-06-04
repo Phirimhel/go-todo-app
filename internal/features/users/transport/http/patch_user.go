@@ -1,7 +1,9 @@
 package users_transport_http
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
@@ -14,6 +16,40 @@ import (
 type PatchUserRequest struct {
 	FullName    core_http_types.Nullable[string] `json:"full_name"`
 	PhoneNumber core_http_types.Nullable[string] `json:"phone_number"`
+}
+
+func (r *PatchUserRequest) Validate() error {
+
+	// patch full_name validation
+	if r.FullName.Set {
+		if r.FullName.Value == nil {
+			return fmt.Errorf("full_name can't be NULL")
+		}
+
+		fullNameLength := len([]rune(*r.FullName.Value))
+		if fullNameLength < 3 || fullNameLength > 100 {
+			return fmt.Errorf("full_name can't be less 3 or more thab 100 characters")
+		}
+
+	}
+
+	// patch phone_number validation
+	if r.PhoneNumber.Set {
+		if r.PhoneNumber.Value != nil {
+			phoneNumberLength := len([]rune(*r.PhoneNumber.Value))
+
+			if phoneNumberLength < 10 || phoneNumberLength > 15 {
+				return fmt.Errorf("phone_number can't be less 10 or more thab 15 characters")
+			}
+
+			if !strings.HasPrefix(*r.PhoneNumber.Value, "+") {
+				return fmt.Errorf("phone_number must start with '+'")
+			}
+
+		}
+	}
+
+	return nil
 }
 
 type PatchedUserResponse UserDTOResponse
@@ -37,7 +73,7 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 
 	userPatch := userPatchFromRequest(request)
 	userDomain, err := h.usersService.PatchUser(ctx, userID, userPatch)
-	if err := core_http_request.DecodeAndValidateRequest(r, &request); err != nil {
+	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to patch user")
 		return
 	}
