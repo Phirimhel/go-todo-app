@@ -19,7 +19,7 @@ app-run:
 	go run cmd/todoapp/main.go
 
 clear-logs:
-	rm -f logs/*
+	@rm -f logs/*
 
 
 # postgres 

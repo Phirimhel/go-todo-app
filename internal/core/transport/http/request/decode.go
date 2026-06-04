@@ -11,6 +11,10 @@ import (
 
 var requestValidator = validator.New(validator.WithRequiredStructEnabled())
 
+type validatable interface {
+	Validate() error
+}
+
 func DecodeAndValidateRequest(r *http.Request, dest any) error {
 
 	if err := json.NewDecoder(r.Body).Decode(&dest); err != nil {
@@ -20,8 +24,19 @@ func DecodeAndValidateRequest(r *http.Request, dest any) error {
 		)
 	}
 
-	if err := requestValidator.Struct(dest); err != nil {
-		return fmt.Errorf("request validation: %v, %w",
+	var err error
+
+	// check if DTO has its own rules of validation
+	v, ok := dest.(validatable)
+	if ok {
+		err = v.Validate()
+	} else {
+		// if it hasn't: use stardat validation method
+		err = requestValidator.Struct(dest)
+	}
+
+	if err != nil {
+		return fmt.Errorf("[DTO validation]: request validation: %v, %w",
 			err,
 			core_errors.ErrInvalidArgument,
 		)

@@ -8,6 +8,7 @@ import (
 
 	core_errors "github.com/Phirimhel/go-todo-app/internal/core/errors"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
+	core_http_utils "github.com/Phirimhel/go-todo-app/internal/core/transport/http/utils"
 	"go.uber.org/zap"
 )
 
@@ -63,11 +64,15 @@ func (h *HTTPResponseHandler) ErrorResponse(err error, msg string) {
 	h.errorResponse(statusCode, err, msg)
 }
 
-func (h *HTTPResponseHandler) PanicResponse(p any, msg string) {
+func (h *HTTPResponseHandler) PanicResponse(p any, msg string, stack []byte) {
 	statusCode := http.StatusInternalServerError
 	err := fmt.Errorf("unexpected panic: %v", p)
 
-	h.log.Error(msg, zap.Error(err))
+	h.log.Error(
+		msg,
+		zap.Error(err),
+		zap.String("stac_trace", core_http_utils.FilterStack(stack)),
+	)
 	h.errorResponse(statusCode, err, msg)
 }
 
