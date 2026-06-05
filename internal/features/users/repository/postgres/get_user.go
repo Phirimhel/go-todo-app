@@ -16,7 +16,7 @@ func (r *usersRepository) GetUser(ctx context.Context, id int) (domain.User, err
 
 	query := `
 	SELECT id, Version, full_name, phone_number FROM todoapp.users
-	WHERE id = $1 
+	WHERE id = $1; 
 	`
 
 	row := r.pool.QueryRow(ctx, query, id)
