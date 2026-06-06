@@ -16,8 +16,12 @@ type Logger struct {
 	file *os.File
 }
 
+type logerContextKey struct{}
+
+var LogerContextKey = logerContextKey{}
+
 func GetLoggerFromContext(ctx context.Context) *Logger {
-	log, ok := ctx.Value("log").(*Logger)
+	log, ok := ctx.Value(LogerContextKey).(*Logger)
 
 	if !ok {
 		panic("no logger in context")

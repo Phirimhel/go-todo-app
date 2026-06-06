@@ -3,6 +3,8 @@ package core_http_server
 import (
 	"fmt"
 	"net/http"
+
+	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
 )
 
 type ApiVersion string
@@ -29,6 +31,7 @@ func (a *ApiVersionRouter) RegisterRoutes(routes ...Route) {
 	for _, route := range routes {
 		pattern := fmt.Sprintf("%s %s", route.Method, route.Path)
 
-		a.ServeMux.Handle(pattern, route.Hanler)
+		h := core_http_midleware.ChaneMiddleware(route.Hanler, route.Middleware...)
+		a.ServeMux.Handle(pattern, h)
 	}
 }

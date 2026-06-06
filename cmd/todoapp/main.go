@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
-	core_postgres_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool"
+	core_pgx_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool/pgx"
 	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/Phirimhel/go-todo-app/internal/core/transport/http/server"
 	users_postgres_repository "github.com/Phirimhel/go-todo-app/internal/features/users/repository/postgres"
@@ -33,9 +33,9 @@ func main() {
 
 	// conn pool
 	logger.Debug("initializing postgres conection pool")
-	pool, err := core_postgres_pool.NewConectionPool(
+	pool, err := core_pgx_pool.NewPgxConnectionPool(
 		ctx,
-		core_postgres_pool.NewConfigMust(),
+		core_pgx_pool.NewConfigMust(),
 	)
 	if err != nil {
 		logger.Fatal("failed to init postgres conection pool:", zap.Error(err))
@@ -48,15 +48,15 @@ func main() {
 	userService := users_service.NewUserService(usersRepository)
 	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(userService)
 
-	// server start config
+	// server config
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPserver(
 		core_http_server.NewConfigMust(),
 		logger,
 		core_http_midleware.RequestID(),
 		core_http_midleware.Logger(logger),
-		core_http_midleware.Panic(),
 		core_http_midleware.Trace(),
+		core_http_midleware.Panic(),
 	)
 
 	// routers

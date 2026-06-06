@@ -7,7 +7,7 @@ import (
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
 	core_errors "github.com/Phirimhel/go-todo-app/internal/core/errors"
-	"github.com/jackc/pgx/v5"
+	core_postgres_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool"
 )
 
 func (r *usersRepository) PatchUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
@@ -37,7 +37,7 @@ func (r *usersRepository) PatchUser(ctx context.Context, id int, user domain.Use
 		&userModel.FullName,
 		&userModel.PhoneNumber,
 	); err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
 				"[repo]: user with id='%d'concurently accesed %w",
 				id,
