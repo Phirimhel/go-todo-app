@@ -15,21 +15,22 @@ import (
 const requestIDHeader = "X-Request-ID"
 
 func RequestID() Middleware {
-
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		return http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
 
-			requestID := r.Header.Get(requestIDHeader)
+				requestID := r.Header.Get(requestIDHeader)
 
-			if requestID == "" {
-				requestID = uuid.NewString()
-			}
+				if requestID == "" {
+					requestID = uuid.NewString()
+				}
 
-			r.Header.Set(requestIDHeader, requestID)
-			w.Header().Set(requestIDHeader, requestID)
+				r.Header.Set(requestIDHeader, requestID)
+				w.Header().Set(requestIDHeader, requestID)
 
-			next.ServeHTTP(w, r)
-		})
+				next.ServeHTTP(w, r)
+			},
+		)
 	}
 }
 
@@ -94,6 +95,32 @@ func Panic() Middleware {
 				}
 			}()
 
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func TestMiddlewareIN() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			ctx := r.Context()
+			log := core_logger.GetLoggerFromContext(ctx)
+
+			log.Debug("test_nidle_ware_IN")
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func TestMiddlewareOUT() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			ctx := r.Context()
+			log := core_logger.GetLoggerFromContext(ctx)
+
+			log.Debug("test_nidle_ware_OUT")
 			next.ServeHTTP(w, r)
 		})
 	}

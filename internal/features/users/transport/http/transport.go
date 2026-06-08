@@ -1,6 +1,7 @@
 package users_transport_http
 
 import (
+	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/Phirimhel/go-todo-app/internal/core/transport/http/server"
 	users_service "github.com/Phirimhel/go-todo-app/internal/features/users/service"
 )
@@ -25,6 +26,9 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method: "GET",
 			Path:   "/users/{id}",
 			Hanler: h.GetUser,
+			Middleware: []core_http_midleware.Middleware{
+				core_http_midleware.MockMiddleware(),
+			},
 		},
 		{
 			Method: "DELETE",

@@ -20,3 +20,11 @@ func NewRoute(Method, Path string, Hanler http.HandlerFunc) Route {
 		Hanler: Hanler,
 	}
 }
+
+func (r *Route) WithMiddleware() http.Handler {
+	return core_http_midleware.ChaneMiddleware(
+		r.Hanler,
+		r.Middleware...,
+	)
+
+}
