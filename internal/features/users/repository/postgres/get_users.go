@@ -19,7 +19,7 @@ func (r *usersRepository) GetUsers(ctx context.Context, limit, offset *int) ([]d
 	`
 	rows, err := r.pool.Query(ctx, query, limit, offset)
 	if err != nil {
-		return nil, fmt.Errorf("select users rows: %w", err)
+		return nil, fmt.Errorf("[repo]: select users rows: %w", err)
 	}
 	defer rows.Close()
 

@@ -36,12 +36,18 @@ func (h *UsersHTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLimitOffsetQueryParams(r *http.Request) (*int, *int, error) {
-	limit, err := core_http_utils.GetQueryParams(r, "limit")
+
+	const (
+		limitQueryParamsKey  = "limit"
+		offsetQueryParamsKey = "offset"
+	)
+
+	limit, err := core_http_utils.GetQueryParams(r, limitQueryParamsKey)
 	if err != nil {
 		return nil, nil, fmt.Errorf("get limit query params: %w", err)
 	}
 
-	offser, err := core_http_utils.GetQueryParams(r, "offset")
+	offser, err := core_http_utils.GetQueryParams(r, offsetQueryParamsKey)
 	if err != nil {
 		return nil, nil, fmt.Errorf("get offset query params: %w", err)
 	}

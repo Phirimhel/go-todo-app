@@ -9,6 +9,9 @@ import (
 	core_pgx_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool/pgx"
 	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/Phirimhel/go-todo-app/internal/core/transport/http/server"
+	tasks_repository "github.com/Phirimhel/go-todo-app/internal/features/tasks/repository/postgres"
+	tasks_service "github.com/Phirimhel/go-todo-app/internal/features/tasks/service"
+	tasks_transport_http "github.com/Phirimhel/go-todo-app/internal/features/tasks/transport/http"
 	users_postgres_repository "github.com/Phirimhel/go-todo-app/internal/features/users/repository/postgres"
 	users_service "github.com/Phirimhel/go-todo-app/internal/features/users/service"
 	users_transport_http "github.com/Phirimhel/go-todo-app/internal/features/users/transport/http"
@@ -48,6 +51,12 @@ func main() {
 	userService := users_service.NewUserService(usersRepository)
 	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(userService)
 
+	//tasks
+	logger.Debug("initializing features", zap.String("feature", "tasks"))
+	tasksRepository := tasks_repository.NewTasksRepository(pool)
+	tasksService := tasks_service.NewTasksService(tasksRepository)
+	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
+
 	// server config
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPserver(
@@ -64,14 +73,16 @@ func main() {
 	// routers (V1)
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
-	httpServer.RegisterApiRoutes(apiVersionRouter)
+	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
+
 	// routers (V2 with middlerware)
 	apiVersionRouterV2 := core_http_server.NewApiVersionRouter(
 		core_http_server.ApiVersion2,
 		core_http_midleware.RouterMockMiddleware(),
 	)
 	apiVersionRouterV2.RegisterRoutes(usersTransportHTTP.Routes()...)
-	httpServer.RegisterApiRoutes(apiVersionRouterV2)
+
+	httpServer.RegisterApiRoutes(apiVersionRouter, apiVersionRouterV2)
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error", zap.Error(err))
