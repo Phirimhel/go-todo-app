@@ -13,9 +13,9 @@ func MockMiddleware() Middleware {
 			ctx := r.Context()
 			log := core_logger.GetLoggerFromContext(ctx)
 
-			log.Debug("<<< 🔵DUMMY LOG IN")
+			log.Debug("<<< 🔵 handler in")
 			next.ServeHTTP(w, r)
-			log.Debug(">>> 🟡DUMMY LOG OUT")
+			log.Debug(">>> 🔵 handler out")
 		})
 	}
 
@@ -28,9 +28,9 @@ func RouterMockMiddleware() Middleware {
 			ctx := r.Context()
 			log := core_logger.GetLoggerFromContext(ctx)
 
-			log.Debug("<<< 🔵DUMMY ROUTER LOG IN")
+			log.Debug("<<< 🟡 router in")
 			next.ServeHTTP(w, r)
-			log.Debug(">>> 🟡DUMMY ROUTER LOG OUT")
+			log.Debug(">>> 🟡 router out")
 		})
 	}
 }
@@ -42,9 +42,9 @@ func RouterMockServerMiddleware() Middleware {
 			ctx := r.Context()
 			log := core_logger.GetLoggerFromContext(ctx)
 
-			log.Debug("<<< 🟣DUMMY SERVER OBAL LOG IN")
+			log.Debug("<<< 🟣 server in")
 			next.ServeHTTP(w, r)
-			log.Debug(">>> 🟣DUMMY SERVER LOG OUT")
+			log.Debug(">>> 🟣 server out")
 		})
 	}
 }

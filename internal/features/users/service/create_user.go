@@ -15,7 +15,7 @@ func (s *userService) CreateUser(ctx context.Context, user domain.User) (domain.
 
 	user, err := s.UsersRepository.CreateUser(ctx, user)
 	if err != nil {
-		return domain.User{}, fmt.Errorf("[service]: create user repository: %w", err)
+		return domain.User{}, fmt.Errorf("[service]: create user in repository: %w", err)
 	}
 
 	return user, nil
