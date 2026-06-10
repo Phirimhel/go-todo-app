@@ -17,7 +17,6 @@ func (r *usersRepository) DeleteUser(ctx context.Context, id int) error {
 	`
 
 	cmdTag, err := r.pool.Exec(ctx, query, id)
-
 	if err != nil {
 		return fmt.Errorf("[repo]: failed to delete user with id='%d' %w", id, err)
 	}

@@ -1,0 +1,75 @@
+{
+"Context with Timeout for repository": {
+    "prefix": "ctxr",
+    "body": [
+        "ctx, cancel := context.WithTimeout(${1:ctx}, ${2:r.pool.OpTimeout()})",
+        "defer cancel()$0"
+    ],
+    "description": "create context with cansel timeout for repository"
+},
+
+"Context + responseHandler for handler": {
+	"prefix": "ctxh",
+	"body": [
+	"ctx := r.Context()",
+	"log := core_logger.GetLoggerFromContext(ctx)",
+	"responseHandler := core_http_response.NewHTTPResponseHandler(log, w)",
+
+	"log.Debug(\"${1:invoice create ____ handler}\")",
+	],
+	"description": "create context for handler"
+},
+
+"response": {
+	"prefix": "resh",
+	"body": [
+	"DTO := taskDTOfromDomain(taksDomain)",
+	"Response := createTaskResponse(taskDTO)",
+	"responseHandler.JSONResponse(Response, http.StatusCreated)"
+	],
+	"description": "create response"
+},
+
+
+"get path id": {
+	"prefix": "getpath",
+	"body": [
+	"ID, err := core_http_utils.GetPathValue(r, \"${id}\")",
+	"if err != nil {",
+		"responseHandler.ErrorResponse(err, \"${failed to get ID from path value}\")",
+		"return",
+	"}"
+	],
+	"description": "create get path id function with error"
+},
+
+
+"error response": {
+	"prefix": "reserr",
+	"body": [
+	"if err != nil {",
+		"responseHandler.ErrorResponse(err, \"${failed to _}\")",
+		"return",
+	"}"
+	],
+	"description": "create error response handler"
+},
+
+
+"create query": {
+	"prefix": "getquery",
+	"body": [
+	"id, err := core_http_utils.GetQueryParams(r, query)",
+	"if err != nil {",
+		"return nil, nil, nil, fmt.Errorf(\"${failed to get param}\", err)",
+	"}"
+	],
+	"description": "create querry"
+},
+
+
+
+
+
+
+}

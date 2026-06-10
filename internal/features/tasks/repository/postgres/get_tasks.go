@@ -1,4 +1,4 @@
-package tasks_repository
+package tasks_postgres_repository
 
 import (
 	"context"

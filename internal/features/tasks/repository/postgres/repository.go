@@ -1,4 +1,4 @@
-package tasks_repository
+package tasks_postgres_repository
 
 import (
 	"context"
@@ -11,6 +11,7 @@ type TasksRepository interface {
 	CreateTask(ctx context.Context, task domain.Task) (domain.Task, error)
 	GetTasks(ctx context.Context, id, limit, offset *int) ([]domain.Task, error)
 	GetTask(ctx context.Context, taskID int) (domain.Task, error)
+	DeleteTask(ctx context.Context, taksID int) error
 }
 
 type tasksRepository struct {
