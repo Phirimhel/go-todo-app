@@ -8,14 +8,16 @@ import (
 )
 
 type Task struct {
-	ID          int
-	Version     int
+	ID      int
+	Version int
+
 	Title       string
 	Description *string
 	Completed   bool
 	CreatedAt   time.Time
 	CompletedAt *time.Time
-	AuthorID    int
+
+	AuthorID int
 }
 
 func NewTaskUnitialized(
@@ -62,7 +64,7 @@ func (t *Task) ValidateTask() error {
 	titleLength := len([]rune(t.Title))
 	if titleLength < 1 || titleLength > 100 {
 		return fmt.Errorf(
-			"invalid FullName length: %d, %w",
+			"invalid task title length: %d, %w",
 			titleLength,
 			core_errors.ErrInvalidArgument,
 		)
@@ -72,19 +74,40 @@ func (t *Task) ValidateTask() error {
 		descriptionLength := len([]rune(*t.Description))
 		if 1 > descriptionLength || descriptionLength > 1000 {
 			return fmt.Errorf(
-				"invalid Description length: %d, %w",
+				"invalid task description length: %d, %w",
 				descriptionLength,
 				core_errors.ErrInvalidArgument,
 			)
 		}
 	}
 
+	// if created time < completed time
 	if t.CompletedAt != nil {
 		if t.CreatedAt.After(*t.CompletedAt) {
 			return fmt.Errorf(
 				"task can't be completed (%v) before it is created (%v), %w",
 				*t.CompletedAt,
 				t.CreatedAt,
+				core_errors.ErrInvalidArgument,
+			)
+		}
+	}
+
+	// if completed but CompletedAt == nil
+	if t.Completed {
+		if t.CompletedAt == nil {
+			return fmt.Errorf(
+				"'CompletedAt' can't be completed nil, if field completed is 'true', %w",
+				core_errors.ErrInvalidArgument,
+			)
+		}
+	}
+
+	// if NOT completed but has CompletedAt NOT nil.
+	if !t.Completed {
+		if t.CompletedAt != nil {
+			return fmt.Errorf(
+				"CompletedAt must be 'nil' if completed == false, %w",
 				core_errors.ErrInvalidArgument,
 			)
 		}
