@@ -2,9 +2,12 @@ package tasks_postgres_repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/Phirimhel/go-todo-app/internal/core/domain"
+	core_errors "github.com/Phirimhel/go-todo-app/internal/core/errors"
+	core_postgres_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool"
 )
 
 func (r *tasksRepository) CreateTask(ctx context.Context, task domain.Task) (domain.Task, error) {
@@ -17,9 +20,10 @@ func (r *tasksRepository) CreateTask(ctx context.Context, task domain.Task) (dom
 			description, 
 			completed, 
 			created_at, 
+			completed_at,
 			author_id
 			) 
-		VALUES ($1, $2, $3, $4, $5)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING 
 			id, 
 			version, 
@@ -38,6 +42,7 @@ func (r *tasksRepository) CreateTask(ctx context.Context, task domain.Task) (dom
 		task.Description,
 		task.Completed,
 		task.CreatedAt,
+		task.CompletedAt,
 		task.AuthorID,
 	)
 
@@ -52,7 +57,17 @@ func (r *tasksRepository) CreateTask(ctx context.Context, task domain.Task) (dom
 		&TaskModel.CompletedAt,
 		&TaskModel.AuthorID,
 	); err != nil {
-		return domain.Task{}, fmt.Errorf("[repo]: failed to scan task model %w", err)
+
+		if errors.Is(err, core_postgres_pool.ErrViolatesForeignKey) {
+			return domain.Task{}, fmt.Errorf("[repo]: %v: failed to scan task model. author id = '%d' %w",
+				err,
+				task.AuthorID,
+				core_errors.ErrNotFound,
+			)
+		}
+
+		return domain.Task{}, fmt.Errorf("[repo]: failed to scan task model. %w", err)
+
 	}
 
 	taskDomen := taskDomainFromUserModel(TaskModel)
