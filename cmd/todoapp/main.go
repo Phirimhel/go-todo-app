@@ -6,6 +6,7 @@ import (
 	"syscall"
 	"time"
 
+	core_config "github.com/Phirimhel/go-todo-app/internal/core/config"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
 	core_pgx_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool/pgx"
 	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
@@ -19,10 +20,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var timeZone = time.UTC
-
 func main() {
-	time.Local = timeZone
+	// time zone
+	globalConfig := core_config.NewGlobalConfigMust()
+	time.Local = globalConfig.TimeZone
 
 	// main ctx
 	ctx, cancel := signal.NotifyContext(
@@ -39,7 +40,7 @@ func main() {
 	defer logger.CloseFile()
 
 	//timezone
-	logger.Debug("application time zone", zap.String("zone:", timeZone.String()))
+	logger.Debug("application time zone", zap.String("zone:", time.Local.String()))
 
 	// conn pool
 	logger.Debug("initializing postgres conection pool")

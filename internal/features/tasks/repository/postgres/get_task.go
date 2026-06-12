@@ -41,7 +41,7 @@ func (r *tasksRepository) GetTask(ctx context.Context, taskID int) (domain.Task,
 	); err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.Task{}, fmt.Errorf(
-				"[repo]: task with id='%d' %w",
+				"[repo]: task with id='%d' concurently accessed %w",
 				taskID,
 				core_errors.ErrNotFound,
 			)
