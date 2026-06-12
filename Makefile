@@ -19,9 +19,14 @@ app-run:
 	go run cmd/todoapp/main.go
 
 clear-logs:
-	@rm -f logs/*
-
-
+	@echo "Clean all logs? ${YELLOW}Warning:${NC} Risk of losing all log files. [y/N]: \c"; \
+	read ans; \
+	if [ "$$ans" = "y" ]; then \
+		rm -rf logs/* && \
+		echo "${GREEN}All log files were wiped${NC}"; \
+	else \
+		echo "Logs cleaning aborted"; \
+	fi
 # postgres 
  
 env-up: 
