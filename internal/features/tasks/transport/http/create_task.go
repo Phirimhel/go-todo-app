@@ -16,7 +16,7 @@ type CreateTaskRequest struct {
 	AuthorID    int     `json:"author_id" validate:"required"`
 }
 
-type createTaskResponse TaskDtoResponse
+type CreateTaskResponse TaskDtoResponse
 
 func (h *TasksHTTPHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -39,7 +39,7 @@ func (h *TasksHTTPHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	taskDTO := taskDTOfromDomain(taksDomain)
-	taskResponse := createTaskResponse(taskDTO)
+	taskResponse := CreateTaskResponse(taskDTO)
 	responseHandler.JSONResponse(taskResponse, http.StatusCreated)
 
 }

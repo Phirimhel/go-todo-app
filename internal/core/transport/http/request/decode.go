@@ -36,7 +36,7 @@ func DecodeAndValidateRequest(r *http.Request, dest any) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("[DTO validation]: request validation: %v, %w",
+		return fmt.Errorf("[DTO validation]: %v, %w",
 			err,
 			core_errors.ErrInvalidArgument,
 		)

@@ -12,6 +12,7 @@ type TasksService interface {
 	GetTasks(ctx context.Context, authorID, limit, offset *int) ([]domain.Task, error)
 	GetTask(ctx context.Context, taksID int) (domain.Task, error)
 	DeleteTask(ctx context.Context, taksID int) error
+	PatchTask(ctx context.Context, id int, task domain.TaskPatch) (domain.Task, error)
 }
 
 type tasksService struct {
