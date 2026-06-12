@@ -37,5 +37,10 @@ func (h *TasksHTTPHandler) Routes() []core_http_server.Route {
 			Path:   "/tasks/{id}",
 			Hanler: h.DeleteTask,
 		},
+		{
+			Method: "PATCH",
+			Path:   "/tasks/{id}",
+			Hanler: h.PatchTask,
+		},
 	}
 }

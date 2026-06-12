@@ -27,9 +27,11 @@ func (r *tasksRepository) GetTasks(ctx context.Context, authorID, limit, offset 
 		OFFSET $3;
 	`
 
-	rows, err := r.pool.Query(ctx, query, authorID, limit, offset)
+	args := []any{authorID, limit, offset}
+
+	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("[repo]: select tasks rows")
+		return nil, fmt.Errorf("[repo]: select tasks rows: %w", err)
 	}
 	defer rows.Close()
 
@@ -47,14 +49,14 @@ func (r *tasksRepository) GetTasks(ctx context.Context, authorID, limit, offset 
 			&taskModel.CompletedAt,
 			&taskModel.AuthorID,
 		); err != nil {
-			return nil, fmt.Errorf("[repo]: scan model of select users rows: %w", err)
+			return nil, fmt.Errorf("[repo]: scan task row: %w", err)
 		}
 
 		tasksModels = append(tasksModels, taskModel)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("next rows: %w", err)
+		return nil, fmt.Errorf("[repo]: rows error: %w", err)
 	}
 
 	taskDomains := tasksDomainsFromUserModels(tasksModels)

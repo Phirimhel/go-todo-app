@@ -10,23 +10,40 @@ import (
 	core_postgres_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool"
 )
 
-func (r *tasksRepository) GetTask(ctx context.Context, taskID int) (domain.Task, error) {
+func (r *tasksRepository) PatchTask(ctx context.Context, taskID int, task domain.Task) (domain.Task, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
 	query := `
-		SELECT id, 
+		UPDATE todoapp.tasks
+		SET 
+			title = $1, 
+			description = $2, 
+			completed = $3,
+			completed_at = $4,
+			version = version+1
+		WHERE id = $5 AND version = $6
+		RETURNING
+			id,
 			version, 
 			title, 
 			description, 
 			completed, 
 			created_at, 
 			completed_at,
-			author_id
-		FROM todoapp.tasks 
-		WHERE (id = $1);
+			author_id;
 	`
-	row := r.pool.QueryRow(ctx, query, taskID)
+
+	params := []any{
+		task.Title,
+		task.Description,
+		task.Completed,
+		task.CompletedAt,
+		taskID,
+		task.Version,
+	}
+
+	row := r.pool.QueryRow(ctx, query, params...)
 
 	var taskModel TaskModel
 	if err := row.Scan(
@@ -54,6 +71,6 @@ func (r *tasksRepository) GetTask(ctx context.Context, taskID int) (domain.Task,
 	}
 
 	taskDomain := taskDomainFromUserModel(taskModel)
-	return taskDomain, nil
 
+	return taskDomain, nil
 }

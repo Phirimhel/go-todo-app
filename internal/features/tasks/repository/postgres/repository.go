@@ -12,6 +12,7 @@ type TasksRepository interface {
 	GetTasks(ctx context.Context, id, limit, offset *int) ([]domain.Task, error)
 	GetTask(ctx context.Context, taskID int) (domain.Task, error)
 	DeleteTask(ctx context.Context, taksID int) error
+	PatchTask(ctx context.Context, id int, user domain.Task) (domain.Task, error)
 }
 
 type tasksRepository struct {
