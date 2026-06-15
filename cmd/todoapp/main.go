@@ -11,6 +11,9 @@ import (
 	core_pgx_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool/pgx"
 	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/Phirimhel/go-todo-app/internal/core/transport/http/server"
+	statistics_postgres_repository "github.com/Phirimhel/go-todo-app/internal/features/statistics/repository/postgres"
+	statistic_service "github.com/Phirimhel/go-todo-app/internal/features/statistics/service"
+	statistics_transport_http "github.com/Phirimhel/go-todo-app/internal/features/statistics/transport/http"
 	tasks_repository "github.com/Phirimhel/go-todo-app/internal/features/tasks/repository/postgres"
 	tasks_service "github.com/Phirimhel/go-todo-app/internal/features/tasks/service"
 	tasks_transport_http "github.com/Phirimhel/go-todo-app/internal/features/tasks/transport/http"
@@ -65,6 +68,12 @@ func main() {
 	tasksService := tasks_service.NewTasksService(tasksRepository)
 	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
 
+	//statistics
+	logger.Debug("initializing features", zap.String("feature", "statistics"))
+	statsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
+	statsService := statistic_service.NewStatisticsSercice(statsRepository)
+	statsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statsService)
+
 	// server config
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPserver(
@@ -82,6 +91,7 @@ func main() {
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(statsTransportHTTP.Routes()...)
 
 	// routers (V2 with middlerware)
 	apiVersionRouterV2 := core_http_server.NewApiVersionRouter(
