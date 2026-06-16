@@ -15,7 +15,7 @@ services:
       - POSTGRES_TIMEOUT=${POSTGRES_TIMEOUT}
 
       - LOGGER_LEVEL=${LOGGER_LEVEL}
-      - LOGGER_FOLDER=${PROJECT_ROOT}/out/logs
+      - LOGGER_FOLDER=/app/out/logs
 
     volumes:
       - ${PROJECT_ROOT}/out/logs:/app/out/logs
