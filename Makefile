@@ -21,6 +21,10 @@ app-run:
 app-deploy:
 	@docker compose up -d --build todoapp
 
+# deploy 
+app-undeploy:
+	@docker compose down todoapp
+
 # logs 
 clear-logs:
 	@echo "Clean all logs? ${YELLOW}Warning:${NC} Risk of losing all log files. [y/N]: \c"; \
