@@ -3,7 +3,6 @@ export
 
 export PROJECT_ROOT=$(shell pwd)
 
-
 # Color Scheme
 RED    := \033[0;31m
 YELLOW := \033[0;33m
@@ -13,11 +12,16 @@ NC     := \033[0m
 
 # run app
 app-run:
-	@export LOGGER_FOLDER=${PROJECT_ROOT}/logs && \
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
 	go run cmd/todoapp/main.go
 
+# deploy 
+app-deploy:
+	@docker compose up -d --build todoapp
+
+# logs 
 clear-logs:
 	@echo "Clean all logs? ${YELLOW}Warning:${NC} Risk of losing all log files. [y/N]: \c"; \
 	read ans; \
@@ -93,9 +97,13 @@ migrate-version:
 
 
 # ports
-
 env-port-foward:
 	@docker compose up -d todoapp-port-forwarder 
 	
 env-port-close:
 	@docker compose down todoapp-port-forwarder 
+
+
+# docer compose ps 
+ps:
+	@docker compose ps
