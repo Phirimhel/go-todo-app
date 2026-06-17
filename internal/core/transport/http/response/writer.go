@@ -1,6 +1,9 @@
 package core_http_response
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type ResponseWriter struct {
 	http.ResponseWriter
@@ -23,6 +26,7 @@ func (rw *ResponseWriter) WriteHeader(statusCode int) {
 
 func (rw *ResponseWriter) GetStatusCodeOrPanic() int {
 	if rw.statusCode == statusCodeUnitialized {
+		fmt.Println("\033[31mPANIC: no status code set\033[0m")
 		panic("no status code set")
 	}
 	return rw.statusCode

@@ -21,7 +21,7 @@ app-run:
 app-deploy:
 	@docker compose up -d --build todoapp
 
-# deploy 
+
 app-undeploy:
 	@docker compose down todoapp
 
@@ -30,7 +30,7 @@ clear-logs:
 	@echo "Clean all logs? ${YELLOW}Warning:${NC} Risk of losing all log files. [y/N]: \c"; \
 	read ans; \
 	if [ "$$ans" = "y" ]; then \
-		rm -rf logs/* && \
+		rm -rf out/logs/* && \
 		echo "${GREEN}All log files were wiped${NC}"; \
 	else \
 		echo "Logs cleaning aborted"; \
@@ -111,3 +111,13 @@ env-port-close:
 # docer compose ps 
 ps:
 	@docker compose ps
+
+
+# swagger
+swagger-gen: 
+	@docker compose run --rm swagger \
+		init \
+		-g cmd/todoapp/main.go \
+		-o docs \
+		--parseInternal \
+		--parseDependency
