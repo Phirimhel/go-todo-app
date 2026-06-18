@@ -24,6 +24,15 @@ func (rw *ResponseWriter) WriteHeader(statusCode int) {
 	rw.statusCode = statusCode
 }
 
+func (rw *ResponseWriter) Write(bytes []byte) (int, error) {
+	bytesWrited, err := rw.ResponseWriter.Write(bytes)
+	if err != nil {
+		rw.statusCode = rw.GetStatusCodeOrPanic()
+	}
+	rw.statusCode = http.StatusOK
+	return bytesWrited, err
+}
+
 func (rw *ResponseWriter) GetStatusCodeOrPanic() int {
 	if rw.statusCode == statusCodeUnitialized {
 		fmt.Println("\033[31mPANIC: no status code set\033[0m")
