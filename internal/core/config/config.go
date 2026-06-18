@@ -30,7 +30,8 @@ func NewGlobalConfig() (*GlogbalConfig, error) {
 func NewGlobalConfigMust() *GlogbalConfig {
 	config, err := NewGlobalConfig()
 	if err != nil {
-		err = fmt.Errorf("[global config]: get clobal config, %w ", err)
+		err = fmt.Errorf("[global config]: get Global config, %w ", err)
+		fmt.Println("\033[31mPANIC: get Global config\033[0m")
 		panic(err)
 	}
 

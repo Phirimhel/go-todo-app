@@ -68,6 +68,7 @@ func Trace() Middleware {
 			)
 
 			wrapedResponseWriter := core_http_response.NewResponseWriter(w)
+
 			next.ServeHTTP(wrapedResponseWriter, r)
 
 			log.Debug(
@@ -100,28 +101,28 @@ func Panic() Middleware {
 	}
 }
 
-func TestMiddlewareIN() Middleware {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// func TestMiddlewareIN() Middleware {
+// 	return func(next http.Handler) http.Handler {
+// 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			ctx := r.Context()
-			log := core_logger.GetLoggerFromContext(ctx)
+// 			ctx := r.Context()
+// 			log := core_logger.GetLoggerFromContext(ctx)
 
-			log.Debug("test_nidle_ware_IN")
-			next.ServeHTTP(w, r)
-		})
-	}
-}
+// 			log.Debug("test_nidle_ware_IN")
+// 			next.ServeHTTP(w, r)
+// 		})
+// 	}
+// }
 
-func TestMiddlewareOUT() Middleware {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// func TestMiddlewareOUT() Middleware {
+// 	return func(next http.Handler) http.Handler {
+// 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			ctx := r.Context()
-			log := core_logger.GetLoggerFromContext(ctx)
+// 			ctx := r.Context()
+// 			log := core_logger.GetLoggerFromContext(ctx)
 
-			log.Debug("test_nidle_ware_OUT")
-			next.ServeHTTP(w, r)
-		})
-	}
-}
+// 			log.Debug("test_nidle_ware_OUT")
+// 			next.ServeHTTP(w, r)
+// 		})
+// 	}
+// }

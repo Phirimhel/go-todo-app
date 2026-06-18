@@ -26,6 +26,7 @@ func NewConfigMust() Config {
 	config, err := NewConfig()
 	if err != nil {
 		err = fmt.Errorf("get logger config %w", err)
+		fmt.Println("\033[31mPANIC: NewConfigMust config\033[0m")
 		panic(err)
 	}
 

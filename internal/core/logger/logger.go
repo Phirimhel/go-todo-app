@@ -24,6 +24,7 @@ func GetLoggerFromContext(ctx context.Context) *Logger {
 	log, ok := ctx.Value(LogerContextKey).(*Logger)
 
 	if !ok {
+		fmt.Println("\033[31mPANIC: no ligger in context config\033[0m")
 		panic("no logger in context")
 	}
 

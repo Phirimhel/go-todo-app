@@ -29,6 +29,7 @@ func NewConfigMust() Config {
 	config, err := NewConfig()
 	if err != nil {
 		err = fmt.Errorf("get Postgress conection pool: %w", err)
+		fmt.Println("\033[31mPANIC: get Postgress conection\033[0m")
 		panic(err)
 	}
 	return config

@@ -21,6 +21,8 @@ import (
 	users_service "github.com/Phirimhel/go-todo-app/internal/features/users/service"
 	users_transport_http "github.com/Phirimhel/go-todo-app/internal/features/users/transport/http"
 	"go.uber.org/zap"
+
+	_ "github.com/Phirimhel/go-todo-app/docs"
 )
 
 func main() {
@@ -83,7 +85,7 @@ func main() {
 		core_http_midleware.RequestID(),
 		core_http_midleware.Logger(logger),
 		core_http_midleware.Trace(),
-		core_http_midleware.RouterMockServerMiddleware(),
+		//core_http_midleware.RouterMockServerMiddleware(),
 		core_http_midleware.Panic(),
 	)
 
@@ -96,11 +98,12 @@ func main() {
 	// routers (V2 with middlerware)
 	apiVersionRouterV2 := core_http_server.NewApiVersionRouter(
 		core_http_server.ApiVersion2,
-		core_http_midleware.RouterMockMiddleware(),
+		//core_http_midleware.RouterMockMiddleware(),
 	)
 	apiVersionRouterV2.RegisterRoutes(usersTransportHTTP.Routes()...)
 
 	httpServer.RegisterApiRoutes(apiVersionRouter, apiVersionRouterV2)
+	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error", zap.Error(err))
