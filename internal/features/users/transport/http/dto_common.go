@@ -3,10 +3,10 @@ package users_transport_http
 import "github.com/Phirimhel/go-todo-app/internal/core/domain"
 
 type UserDTOResponse struct {
-	ID          int     `json:"id"`
-	Version     int     `json:"version"`
-	FullName    string  `json:"full_name"`
-	PhoneNumber *string `json:"phone_number"`
+	ID          int     `json:"id" example:"10"`
+	Version     int     `json:"version" example:"23"`
+	FullName    string  `json:"full_name" example:"John Doe"`
+	PhoneNumber *string `json:"phone_number" example:"+35921234567"`
 }
 
 func userDTOFromDomain(user domain.User) UserDTOResponse {
@@ -16,7 +16,6 @@ func userDTOFromDomain(user domain.User) UserDTOResponse {
 		FullName:    user.FullName,
 		PhoneNumber: user.PhoneNumber,
 	}
-
 }
 
 func usersDTOFromDomains(userDomains []domain.User) []UserDTOResponse {
