@@ -1,4 +1,78 @@
+basePath: /api/v1
+definitions:
+  github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse:
+    properties:
+      error:
+        example: full error text
+        type: string
+      message:
+        example: readble human message
+        type: string
+    type: object
+  internal_features_users_transport_http.CreateUserRequest:
+    properties:
+      full_name:
+        example: John Doe
+        maxLength: 100
+        minLength: 3
+        type: string
+      phone_number:
+        example: "+35921234567"
+        type: string
+    required:
+    - full_name
+    type: object
+  internal_features_users_transport_http.CreateUserResponse:
+    properties:
+      full_name:
+        example: John Doe
+        type: string
+      id:
+        example: 10
+        type: integer
+      phone_number:
+        example: "+35921234567"
+        type: string
+      version:
+        example: 23
+        type: integer
+    type: object
+host: 127.0.0.1:8080
 info:
   contact: {}
-paths: {}
+  description: This is a production-ready RESTful Todo API server written in Go.
+  termsOfService: http://swagger.io
+  title: Golang Todo API
+  version: "1.0"
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create new user in the system
+      parameters:
+      - description: Create user request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User successfully created
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.CreateUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Create user
+      tags:
+      - users
 swagger: "2.0"

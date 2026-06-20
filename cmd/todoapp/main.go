@@ -25,6 +25,13 @@ import (
 	_ "github.com/Phirimhel/go-todo-app/docs"
 )
 
+// @title 			Golang Todo API
+// @version 		1.0
+// @description 	This is a production-ready RESTful Todo API server written in Go.
+// @termsOfService 	http://swagger.io
+// @host 			127.0.0.1:8080
+// @BasePath 		/api/v1
+
 func main() {
 	// time zone
 	globalConfig := core_config.NewGlobalConfigMust()
