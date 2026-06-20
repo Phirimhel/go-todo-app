@@ -14,6 +14,18 @@ type GetTasksRequest struct {
 
 type GetTasksResponse []TaskDtoResponse
 
+// GetTasks godoc
+// @Summary      Get list of []tasks
+// @Description  Get all tasks from the system
+// @Tags         tasks
+// @Accept       json
+// @Produce      json
+// @Param        limit   	query     int  false  "Max number of tasks to return"      default(10)
+// @Param        offset  	query     int  false  "Number of tasks to skip"            default(0)
+// @Success      200  	 	{array}   GetTasksResponse  "List of tasks successfully retrieved"
+// @Failure      400  	 	{object}  core_http_response.ErrorResponse  "Bad request"
+// @Failure      500  		{object}  core_http_response.ErrorResponse  "Internal server error"
+// @Router       /tasks [get]
 func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.GetLoggerFromContext(ctx)

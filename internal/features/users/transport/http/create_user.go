@@ -9,6 +9,7 @@ import (
 	core_http_response "github.com/Phirimhel/go-todo-app/internal/core/transport/http/response"
 )
 
+// @name CreateUserRequest
 type CreateUserRequest struct {
 	FullName    string  `json:"full_name" validate:"required,min=3,max=100" example:"John Doe"`
 	PhoneNumber *string `json:"phone_number" validate:"omitempty,e164" example:"+35921234567"`
@@ -18,11 +19,11 @@ type CreateUserResponse UserDTOResponse
 
 // CreateUser godoc
 // @Summary      Create user
-// @Description  Create new user in the system
+// @Description  Create new user
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        request  body      CreateUserRequest  true  "Create user request body"
+// @Param        request   body      CreateUserRequest  true  "Create user request body"
 // @Success      201       {object}  CreateUserResponse  "User successfully created"
 // @Failure      400       {object}  core_http_response.ErrorResponse  "Bad request"
 // @Failure      500       {object}  core_http_response.ErrorResponse  "Internal server error"

@@ -12,6 +12,20 @@ import (
 
 type GetStatistics StatisticDTOResponse
 
+// GetStatistics godoc
+// @Summary      Get statistics
+// @Description  Get statistics for a specific author within a date range
+// @Tags         statistics
+// @Accept       json
+// @Produce      json
+// @Param        author_id   query     int       true  "Author ID"
+// @Param        from        query     string    true  "Start date (YYYY-MM-DD)" format(date)
+// @Param        to          query     string    true  "End date (YYYY-MM-DD)"   format(date)
+// @Success      200         {object}  GetStatistics  "statistics successfully retrieved"
+// @Failure      400         {object}  core_http_response.ErrorResponse  "Bad request"
+// @Failure      404         {object}  core_http_response.ErrorResponse  "Statistics not found"
+// @Failure      500         {object}  core_http_response.ErrorResponse  "Internal server error"
+// @Router       /statistics [get]
 func (h *StatisticsHTTPHandler) GetStatistics(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.GetLoggerFromContext(ctx)
