@@ -9,7 +9,6 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io",
         "contact": {},
         "version": "{{.Version}}"
     },
@@ -34,24 +33,21 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Author ID",
                         "name": "author_id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "format": "date",
                         "description": "Start date (YYYY-MM-DD)",
                         "name": "from",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "format": "date",
                         "description": "End date (YYYY-MM-DD)",
                         "name": "to",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -278,7 +274,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Partially update a user by ID",
+                "description": "Partially update a task by ID\n### Update fields logic (three-state logic):\n**Field is not passed**: ` + "`" + `description` + "`" + ` or ` + "`" + `title` + "`" + ` is ignored; the value in the DB will not change.\n**Field is passed**: ` + "`" + `\"description\": \"Read a book\"` + "`" + `, the value in the DB will change.\n**Field is passed as null**: ` + "`" + `\"description\": null` + "`" + `, the value in the DB will be deleted (or set to null).\n**Constraints**: The ` + "`" + `title` + "`" + ` field cannot be set to null.",
                 "consumes": [
                     "application/json"
                 ],
@@ -292,7 +288,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID to patch",
+                        "description": "Task ID to patch",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -309,7 +305,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User successfully patched",
+                        "description": "Task successfully patched",
                         "schema": {
                             "$ref": "#/definitions/internal_features_tasks_transport_http.PatchTaskResponse"
                         }
@@ -321,7 +317,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "User not found",
+                        "description": "Task not found",
                         "schema": {
                             "$ref": "#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse"
                         }
@@ -496,7 +492,7 @@ const docTemplate = `{
                 "summary": "Delete user",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "User ID to delete",
                         "name": "id",
                         "in": "path",
@@ -528,7 +524,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Partially update a user by ID",
+                "description": "Partially update a user by ID\n### Update fields logic (three-state logic):\n**Field is not passed**: ` + "`" + `phone_number` + "`" + ` is ignored; the value in the DB will not change.\n**Field is passed**: ` + "`" + `\"phone_number\": \"+7832848348338\"` + "`" + `, the value in the DB will change.\n**Field is passed as null**: ` + "`" + `\"phone_number\": null` + "`" + `, the value in the DB will be deleted.\n**Constraints**: The ` + "`" + `full_name` + "`" + ` field cannot be set to null.",
                 "consumes": [
                     "application/json"
                 ],
@@ -553,7 +549,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_features_users_transport_http.UserPatchDocRequest"
+                            "$ref": "#/definitions/internal_features_users_transport_http.PatchUserRequest"
                         }
                     }
                 ],
@@ -597,17 +593,6 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "readble human message"
-                }
-            }
-        },
-        "github_com_Phirimhel_go-todo-app_internal_core_transport_http_types.Nullable-string": {
-            "type": "object",
-            "properties": {
-                "set": {
-                    "type": "boolean"
-                },
-                "value": {
-                    "type": "string"
                 }
             }
         },
@@ -737,7 +722,21 @@ const docTemplate = `{
             }
         },
         "internal_features_tasks_transport_http.PatchTaskRequest": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Build the docker image, run migrations, and update the Kubernetes deployment configuration."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Deploy auth service to staging"
+                }
+            }
         },
         "internal_features_tasks_transport_http.PatchTaskResponse": {
             "type": "object",
@@ -852,6 +851,19 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_features_users_transport_http.PatchUserRequest": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "phone_number": {
+                    "type": "string",
+                    "example": "+1234567890"
+                }
+            }
+        },
         "internal_features_users_transport_http.PatchedUserResponse": {
             "type": "object",
             "properties": {
@@ -891,19 +903,6 @@ const docTemplate = `{
                 "version": {
                     "type": "integer",
                     "example": 23
-                }
-            }
-        },
-        "internal_features_users_transport_http.UserPatchDocRequest": {
-            "type": "object",
-            "properties": {
-                "full_name": {
-                    "type": "string",
-                    "example": "John Doe"
-                },
-                "phone_number": {
-                    "type": "string",
-                    "example": "+1234567890"
                 }
             }
         }

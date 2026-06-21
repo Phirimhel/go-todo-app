@@ -9,13 +9,6 @@ definitions:
         example: readble human message
         type: string
     type: object
-  github_com_Phirimhel_go-todo-app_internal_core_transport_http_types.Nullable-string:
-    properties:
-      set:
-        type: boolean
-      value:
-        type: string
-    type: object
   internal_features_statistics_transport_http.GetStatistics:
     properties:
       tasks_average_completed_time:
@@ -109,6 +102,17 @@ definitions:
         type: integer
     type: object
   internal_features_tasks_transport_http.PatchTaskRequest:
+    properties:
+      completed:
+        example: true
+        type: boolean
+      description:
+        example: Build the docker image, run migrations, and update the Kubernetes
+          deployment configuration.
+        type: string
+      title:
+        example: Deploy auth service to staging
+        type: string
     type: object
   internal_features_tasks_transport_http.PatchTaskResponse:
     properties:
@@ -192,6 +196,15 @@ definitions:
         example: 23
         type: integer
     type: object
+  internal_features_users_transport_http.PatchUserRequest:
+    properties:
+      full_name:
+        example: John Doe
+        type: string
+      phone_number:
+        example: "+1234567890"
+        type: string
+    type: object
   internal_features_users_transport_http.PatchedUserResponse:
     properties:
       full_name:
@@ -222,20 +235,10 @@ definitions:
         example: 23
         type: integer
     type: object
-  internal_features_users_transport_http.UserPatchDocRequest:
-    properties:
-      full_name:
-        example: John Doe
-        type: string
-      phone_number:
-        example: "+1234567890"
-        type: string
-    type: object
 host: 127.0.0.1:8080
 info:
   contact: {}
   description: This is a production-ready RESTful Todo API server written in Go.
-  termsOfService: http://swagger.io
   title: Golang Todo API
   version: "1.0"
 paths:
@@ -248,19 +251,16 @@ paths:
       - description: Author ID
         in: query
         name: author_id
-        required: true
         type: integer
       - description: Start date (YYYY-MM-DD)
         format: date
         in: query
         name: from
-        required: true
         type: string
       - description: End date (YYYY-MM-DD)
         format: date
         in: query
         name: to
-        required: true
         type: string
       produces:
       - application/json
@@ -417,9 +417,15 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Partially update a user by ID
+      description: |-
+        Partially update a task by ID
+        ### Update fields logic (three-state logic):
+        **Field is not passed**: `description` or `title` is ignored; the value in the DB will not change.
+        **Field is passed**: `"description": "Read a book"`, the value in the DB will change.
+        **Field is passed as null**: `"description": null`, the value in the DB will be deleted (or set to null).
+        **Constraints**: The `title` field cannot be set to null.
       parameters:
-      - description: User ID to patch
+      - description: Task ID to patch
         in: path
         name: id
         required: true
@@ -434,7 +440,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: User successfully patched
+          description: Task successfully patched
           schema:
             $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskResponse'
         "400":
@@ -442,7 +448,7 @@ paths:
           schema:
             $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
         "404":
-          description: User not found
+          description: Task not found
           schema:
             $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
         "500":
@@ -527,7 +533,7 @@ paths:
         in: path
         name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -583,7 +589,13 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Partially update a user by ID
+      description: |-
+        Partially update a user by ID
+        ### Update fields logic (three-state logic):
+        **Field is not passed**: `phone_number` is ignored; the value in the DB will not change.
+        **Field is passed**: `"phone_number": "+7832848348338"`, the value in the DB will change.
+        **Field is passed as null**: `"phone_number": null`, the value in the DB will be deleted.
+        **Constraints**: The `full_name` field cannot be set to null.
       parameters:
       - description: User ID to patch
         in: path
@@ -595,7 +607,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/internal_features_users_transport_http.UserPatchDocRequest'
+          $ref: '#/definitions/internal_features_users_transport_http.PatchUserRequest'
       produces:
       - application/json
       responses:
