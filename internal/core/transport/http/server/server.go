@@ -9,7 +9,7 @@ import (
 	"github.com/Phirimhel/go-todo-app/docs"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
 	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
-	httpSwagger "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"go.uber.org/zap"
 )
 
@@ -45,7 +45,12 @@ func (s *HTTPServer) RegisterApiRoutes(routers ...*ApiVersionRouter) {
 }
 
 func (s *HTTPServer) RegisterSwagger() {
-	s.mux.Handle("/swagger/", httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")))
+	s.mux.Handle("/swagger/",
+		httpSwagger.Handler(
+			httpSwagger.URL("/swagger/doc.json"),
+			httpSwagger.DefaultModelsExpandDepth(-1),
+		),
+	)
 
 	s.mux.HandleFunc(
 		"/swagger/doc.json",

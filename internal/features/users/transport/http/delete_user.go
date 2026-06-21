@@ -14,7 +14,7 @@ import (
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        id   path      string  true  "User ID to delete"
+// @Param        id   path      int  true  "User ID to delete"
 // @Success      204  "User successfully deleted"
 // @Failure      400  {object}  core_http_response.ErrorResponse  "Bad request"
 // @Failure      404  {object}  core_http_response.ErrorResponse  "User not found"

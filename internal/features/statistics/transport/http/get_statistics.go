@@ -18,9 +18,9 @@ type GetStatistics StatisticDTOResponse
 // @Tags         statistics
 // @Accept       json
 // @Produce      json
-// @Param        author_id   query     int       true  "Author ID"
-// @Param        from        query     string    true  "Start date (YYYY-MM-DD)" format(date)
-// @Param        to          query     string    true  "End date (YYYY-MM-DD)"   format(date)
+// @Param        author_id   query     int       false  "Author ID"
+// @Param        from        query     string    false  "Start date (YYYY-MM-DD)" format(date)
+// @Param        to          query     string    false  "End date (YYYY-MM-DD)"   format(date)
 // @Success      200         {object}  GetStatistics  "statistics successfully retrieved"
 // @Failure      400         {object}  core_http_response.ErrorResponse  "Bad request"
 // @Failure      404         {object}  core_http_response.ErrorResponse  "Statistics not found"

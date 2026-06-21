@@ -13,15 +13,9 @@ import (
 	core_http_utils "github.com/Phirimhel/go-todo-app/internal/core/transport/http/utils"
 )
 
-// UserPatchDocRequest is strictly used to generate clean Swagger documentation
-type UserPatchDocRequest struct {
-	FullName    string `json:"full_name" example:"John Doe"`
-	PhoneNumber string `json:"phone_number" example:"+1234567890"`
-}
-
 type PatchUserRequest struct {
-	FullName    core_http_types.Nullable[string] `json:"full_name"`
-	PhoneNumber core_http_types.Nullable[string] `json:"phone_number"`
+	FullName    core_http_types.Nullable[string] `json:"full_name" swaggertype:"string" example:"John Doe"`
+	PhoneNumber core_http_types.Nullable[string] `json:"phone_number" swaggertype:"string" example:"+1234567890"`
 }
 
 func (r *PatchUserRequest) Validate() error {
@@ -63,11 +57,16 @@ type PatchedUserResponse UserDTOResponse
 // PatchUser godoc
 // @Summary      Update user
 // @Description  Partially update a user by ID
+// @Description  ### Update fields logic (three-state logic):
+// @Description  **Field is not passed**: `phone_number` is ignored; the value in the DB will not change.
+// @Description  **Field is passed**: `"phone_number": "+7832848348338"`, the value in the DB will change.
+// @Description  **Field is passed as null**: `"phone_number": null`, the value in the DB will be deleted.
+// @Description  **Constraints**: The `full_name` field cannot be set to null.
 // @Tags         users
 // @Accept       json
 // @Produce      json
 // @Param        id      path      string              true  "User ID to patch"
-// @Param        request body      UserPatchDocRequest    true  "Fields to update"
+// @Param        request body      PatchUserRequest    true  "Fields to update"
 // @Success      200     {object}  PatchedUserResponse "User successfully patched"
 // @Failure      400     {object}  core_http_response.ErrorResponse "Bad request"
 // @Failure      404     {object}  core_http_response.ErrorResponse "User not found"

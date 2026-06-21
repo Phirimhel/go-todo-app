@@ -28,7 +28,6 @@ import (
 // @title 			Golang Todo API
 // @version 		1.0
 // @description 	This is a production-ready RESTful Todo API server written in Go.
-// @termsOfService 	http://swagger.io
 // @host 			127.0.0.1:8080
 // @BasePath 		/api/v1
 
@@ -88,11 +87,12 @@ func main() {
 	httpServer := core_http_server.NewHTTPserver(
 		core_http_server.NewConfigMust(),
 		logger,
+
 		// server middleware
+		core_http_midleware.CORS(),
 		core_http_midleware.RequestID(),
 		core_http_midleware.Logger(logger),
 		core_http_midleware.Trace(),
-		//core_http_midleware.RouterMockServerMiddleware(),
 		core_http_midleware.Panic(),
 	)
 
