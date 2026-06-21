@@ -13,9 +13,9 @@ import (
 )
 
 type PatchTaskRequest struct {
-	Title       core_http_types.Nullable[string] `json:"title"`
-	Description core_http_types.Nullable[string] `json:"description"`
-	Completed   core_http_types.Nullable[bool]   `json:"completed"`
+	Title       core_http_types.Nullable[string] `json:"title" example:"Homework"`
+	Description core_http_types.Nullable[string] `json:"description" example:"Make the math"`
+	Completed   core_http_types.Nullable[bool]   `json:"completed" example:"false"`
 }
 
 func (r *PatchTaskRequest) Validate() error {
@@ -54,6 +54,19 @@ func (r *PatchTaskRequest) Validate() error {
 
 type PatchTaskResponse TaskDtoResponse
 
+// PatchTask godoc
+// @Summary      Update task
+// @Description  Partially update a user by ID
+// @Tags         tasks
+// @Accept       json
+// @Produce      json
+// @Param        id      path      string              true  "User ID to patch"
+// @Param        request body      PatchTaskRequest    true  "Fields to update"
+// @Success      200     {object}  PatchTaskResponse "User successfully patched"
+// @Failure      400     {object}  core_http_response.ErrorResponse "Bad request"
+// @Failure      404     {object}  core_http_response.ErrorResponse "User not found"
+// @Failure      500     {object}  core_http_response.ErrorResponse "Internal server error"
+// @Router       /tasks/{id} [patch]
 func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.GetLoggerFromContext(ctx)

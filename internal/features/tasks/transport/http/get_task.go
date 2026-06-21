@@ -8,8 +8,21 @@ import (
 	core_http_utils "github.com/Phirimhel/go-todo-app/internal/core/transport/http/utils"
 )
 
+// @name GetTaskResponse
 type GetTaskResponse TaskDtoResponse
 
+// GetTask godoc
+// @Summary      Get task
+// @Description  Get task by ID
+// @Tags         tasks
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "task ID to get"
+// @Success      204  {object}  GetTaskResponse  "task successfully geted"
+// @Failure      400  {object}  core_http_response.ErrorResponse  "Bad request"
+// @Failure      404  {object}  core_http_response.ErrorResponse  "task not found"
+// @Failure      500  {object}  core_http_response.ErrorResponse  "Internal server error"
+// @Router       /tasks/{id} [get]
 func (h *TasksHTTPHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.GetLoggerFromContext(ctx)

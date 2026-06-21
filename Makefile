@@ -120,4 +120,4 @@ swagger-gen:
 		-g cmd/todoapp/main.go \
 		-o docs \
 		--parseInternal \
-		--parseDependency
+		--parseDependency \

@@ -5,10 +5,10 @@ import (
 )
 
 type StatisticDTOResponse struct {
-	TasksCreate                int      `json:"tasks_created"`
-	TasksCompleted             int      `json:"tasks_completed"`
-	TasksCompletedRate         *float64 `json:"tasks_completed_rate"`
-	TasksAverageCompletionTime *string  `json:"tasks_average_completed_time"`
+	TasksCreate                int      `json:"tasks_created" example:"15"`
+	TasksCompleted             int      `json:"tasks_completed" example:"12"`
+	TasksCompletedRate         *float64 `json:"tasks_completed_rate" example:"80.0"`
+	TasksAverageCompletionTime *string  `json:"tasks_average_completed_time" example:"2h 15m"`
 }
 
 func StatisticDTOfromDomain(statistics domain.Statistic) StatisticDTOResponse {
