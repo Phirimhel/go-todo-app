@@ -33,7 +33,6 @@ func (r *ApiVersionRouter) RegisterRoutes(routes ...Route) {
 	for _, route := range routes {
 		pattern := fmt.Sprintf("%s %s", route.Method, route.Path)
 
-		fmt.Println(pattern)
 		r.ServeMux.Handle(pattern, route.WithMiddleware())
 	}
 }
