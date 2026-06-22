@@ -12,7 +12,7 @@ func (r *webRepository) GetFile(path string) ([]byte, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("[repo]: file with name: '%s' is not found %w",
+			return nil, fmt.Errorf("[repo]: file with path: '%s' is not found %w",
 				path,
 				core_errors.ErrNotFound,
 			)
