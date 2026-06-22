@@ -5,7 +5,6 @@ services:
       dockerfile: ${PROJECT_ROOT}/cmd/todoapp/Dockerfile
     environment:
       - HTTP_ADDR=:8080
-
       - TIME_ZONE=UTC
 
       - POSTGRES_HOST=todoapp-postgres  
@@ -16,13 +15,10 @@ services:
 
       - LOGGER_LEVEL=${LOGGER_LEVEL}
       - LOGGER_FOLDER=/app/out/logs
-
     volumes:
       - ${PROJECT_ROOT}/out/logs:/app/out/logs
-
     ports:
       - "8080:8080"
-
     restart: always
       
   todoapp-postgres: 
