@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Linear • Todo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      content: [],
+      theme: { extend: {} }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', system_ui, sans-serif; }
+    .card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card:hover { transform: translateY(-2px); }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-200">
+
+  <div class="max-w-7xl mx-auto p-8">
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between mb-10">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-violet-600 rounded-2xl flex items-center justify-center text-white font-bold">L</div>
+        <h1 class="text-3xl font-semibold tracking-tight">Todo</h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <button onclick="toggleTheme()" id="theme-toggle"
+                class="p-3 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-white transition">
+          <i class="fas fa-moon text-lg"></i>
+        </button>
+        <div class="text-xs text-zinc-500 dark:text-zinc-400">API: http://127.0.0.1:8080/api/v1</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-zinc-200 dark:border-zinc-800 mb-10">
+      <button onclick="switchTab(0)" class="tab px-8 py-4 text-lg font-medium tab-active flex items-center gap-2" id="tab0">
+        <i class="fas fa-list-check"></i> Tasks
+      </button>
+      <button onclick="switchTab(1)" class="tab px-8 py-4 text-lg font-medium flex items-center gap-2" id="tab1">
+        <i class="fas fa-users"></i> Users
+      </button>
+      <button onclick="switchTab(2)" class="tab px-8 py-4 text-lg font-medium flex items-center gap-2" id="tab2">
+        <i class="fas fa-chart-bar"></i> Statistics
+      </button>
+    </div>
+
+    <!-- Tasks -->
+    <div id="content0" class="tab-content">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-semibold">Tasks</h2>
+        <button onclick="showCreateTaskModal()" 
+                class="bg-violet-600 hover:bg-violet-500 px-6 py-3 rounded-2xl flex items-center gap-2 font-medium text-white transition">
+          <i class="fas fa-plus"></i> New Task
+        </button>
+      </div>
+      <div id="tasks-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- Users -->
+    <div id="content1" class="tab-content hidden">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-semibold">Users</h2>
+        <button onclick="showCreateUserModal()" 
+                class="bg-violet-600 hover:bg-violet-500 px-6 py-3 rounded-2xl flex items-center gap-2 font-medium text-white transition">
+          <i class="fas fa-plus"></i> New User
+        </button>
+      </div>
+      <div id="users-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- Statistics -->
+    <div id="content2" class="tab-content hidden">
+      <h2 class="text-2xl font-semibold mb-8">Statistics</h2>
+      <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">Author ID</label>
+            <input id="stat-author-id" type="number" value="1" class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-violet-500"/>
+          </div>
+          <div>
+            <label class="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">From</label>
+            <input id="stat-from" type="date" class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4"/>
+          </div>
+          <div>
+            <label class="block text-sm text-zinc-500 dark:text-zinc-400 mb-2">To</label>
+            <input id="stat-to" type="date" class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4"/>
+          </div>
+        </div>
+        <button onclick="loadStatistics()" class="mt-8 w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-medium text-white">
+          Load Statistics
+        </button>
+        <div id="statistics-result" class="mt-10"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="task-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-3xl p-8 w-full max-w-md">
+      <h3 class="text-2xl font-semibold mb-6">New Task</h3>
+      <input id="task-title" placeholder="Task title" class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4 mb-4"/>
+      <textarea id="task-desc" placeholder="Description..." rows="4" class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4 mb-6"></textarea>
+      <input id="task-author" type="number" placeholder="Author ID" value="1" class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4 mb-8"/>
+      <div class="flex gap-4">
+        <button onclick="createTask()" class="flex-1 bg-violet-600 hover:bg-violet-500 py-4 rounded-2xl font-medium text-white">Create Task</button>
+        <button onclick="hideModals()" class="flex-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 py-4 rounded-2xl">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="user-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-3xl p-8 w-full max-w-md">
+      <h3 class="text-2xl font-semibold mb-6">New User</h3>
+      <input id="user-name" placeholder="Full name" class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4 mb-4"/>
+      <input id="user-phone" placeholder="+359..." class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-2xl px-5 py-4 mb-8"/>
+      <div class="flex gap-4">
+        <button onclick="createUser()" class="flex-1 bg-violet-600 hover:bg-violet-500 py-4 rounded-2xl font-medium text-white">Create User</button>
+        <button onclick="hideModals()" class="flex-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 py-4 rounded-2xl">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://127.0.0.1:8080/api/v1';
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const icon = document.getElementById('theme-toggle').querySelector('i');
+      const isDark = document.documentElement.classList.contains('dark');
+      icon.classList.toggle('fa-moon', isDark);
+      icon.classList.toggle('fa-sun', !isDark);
+    }
+
+    function switchTab(n) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`content${n}`).classList.remove('hidden');
+      document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('tab-active', i === n));
+    }
+
+    async function loadTasks() {
+      const res = await fetch(`${API_BASE}/tasks?limit=30`);
+      const tasks = await res.json();
+      const container = document.getElementById('tasks-list');
+      
+      container.innerHTML = tasks.map(t => `
+        <div class="card bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 hover:border-violet-500/30 flex flex-col h-full">
+          <div class="flex justify-between items-start">
+            <h4 class="font-semibold text-lg pr-4">${t.title}</h4>
+            <span class="status-badge px-4 py-1.5 text-sm rounded-2xl ${t.completed ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400'}">
+              ${t.completed ? '✓ Completed' : 'In Progress'}
+            </span>
+          </div>
+          
+          <p class="text-zinc-600 dark:text-zinc-400 mt-3 flex-1 line-clamp-4">${t.description || 'No description'}</p>
+          
+          <div class="text-xs text-zinc-500 dark:text-zinc-500 mt-6">
+            Author ID: <span class="font-mono">${t.author_id}</span> • ${new Date(t.created_at).toLocaleDateString('en-GB')}
+          </div>
+          
+          <div class="mt-auto pt-6 flex gap-3">
+            <button onclick="toggleComplete(${t.id}, ${t.completed})" 
+                    class="flex-1 py-3 text-sm rounded-2xl ${t.completed ? 'bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}">
+              ${t.completed ? 'Mark Incomplete' : 'Mark Complete'}
+            </button>
+            <button onclick="deleteTask(${t.id})" 
+                    class="flex-1 py-3 text-sm bg-red-100 dark:bg-red-500/10 hover:bg-red-200 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-2xl">
+              Delete
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function toggleComplete(id, currentCompleted) {
+      const newCompleted = !currentCompleted;
+      await fetch(`${API_BASE}/tasks/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: newCompleted })
+      });
+      loadTasks();
+    }
+
+    async function deleteTask(id) {
+      if (confirm('Delete this task?')) {
+        await fetch(`${API_BASE}/tasks/${id}`, { method: 'DELETE' });
+        loadTasks();
+      }
+    }
+
+    async function loadUsers() {
+      const res = await fetch(`${API_BASE}/users?limit=20`);
+      const users = await res.json();
+      const container = document.getElementById('users-list');
+      
+      container.innerHTML = users.map(u => `
+        <div class="card bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center text-2xl text-white">👤</div>
+            <div>
+              <h4 class="font-semibold text-lg">${u.full_name}</h4>
+              <p class="text-zinc-600 dark:text-zinc-400">${u.phone_number}</p>
+            </div>
+          </div>
+          <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500">
+            ID: ${u.id} • Version: ${u.version}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function createUser() {
+      const full_name = document.getElementById('user-name').value;
+      const phone_number = document.getElementById('user-phone').value;
+      await fetch(`${API_BASE}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name, phone_number })
+      });
+      hideModals();
+      loadUsers();
+    }
+
+    async function createTask() {
+      const title = document.getElementById('task-title').value;
+      const description = document.getElementById('task-desc').value;
+      const author_id = parseInt(document.getElementById('task-author').value);
+
+      if (!title) return alert("Title is required");
+
+      await fetch(`${API_BASE}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description, author_id, completed: false })
+      });
+      hideModals();
+      loadTasks();
+    }
+
+    async function loadStatistics() {
+      const author_id = document.getElementById('stat-author-id').value;
+      const from = document.getElementById('stat-from').value;
+      const to = document.getElementById('stat-to').value;
+
+      let url = `${API_BASE}/statistics?author_id=${author_id}`;
+      if (from) url += `&from=${from}`;
+      if (to) url += `&to=${to}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      document.getElementById('statistics-result').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 rounded-3xl text-center">
+            <div class="text-5xl font-bold text-emerald-600 dark:text-emerald-400">${data.tasks_completed}</div>
+            <div class="text-zinc-500 dark:text-zinc-400 mt-2">Completed</div>
+          </div>
+          <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 rounded-3xl text-center">
+            <div class="text-5xl font-bold text-violet-600 dark:text-violet-400">${data.tasks_created}</div>
+            <div class="text-zinc-500 dark:text-zinc-400 mt-2">Created</div>
+          </div>
+          <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 rounded-3xl text-center">
+            <div class="text-5xl font-bold text-amber-600 dark:text-amber-400">${data.tasks_completed_rate}%</div>
+            <div class="text-zinc-500 dark:text-zinc-400 mt-2">Completion Rate</div>
+          </div>
+        </div>
+        <div class="text-center mt-10 text-zinc-500 dark:text-zinc-400">
+          Average completion time: <span class="font-medium text-zinc-900 dark:text-white">${data.tasks_average_completed_time || '—'}</span>
+        </div>
+      `;
+    }
+
+    function showCreateTaskModal() { document.getElementById('task-modal').classList.remove('hidden'); }
+    function showCreateUserModal() { document.getElementById('user-modal').classList.remove('hidden'); }
+    function hideModals() {
+      document.getElementById('task-modal').classList.add('hidden');
+      document.getElementById('user-modal').classList.add('hidden');
+    }
+
+    // Init
+    window.onload = () => {
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+      updateThemeIcon();
+
+      switchTab(0);
+      loadTasks();
+      loadUsers();
+    };
+  </script>
+</body>
+</html>

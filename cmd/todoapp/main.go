@@ -20,6 +20,9 @@ import (
 	users_postgres_repository "github.com/Phirimhel/go-todo-app/internal/features/users/repository/postgres"
 	users_service "github.com/Phirimhel/go-todo-app/internal/features/users/service"
 	users_transport_http "github.com/Phirimhel/go-todo-app/internal/features/users/transport/http"
+	web_fs_repository "github.com/Phirimhel/go-todo-app/internal/features/web/repository/file_system"
+	web_service "github.com/Phirimhel/go-todo-app/internal/features/web/service"
+	web_transport_http "github.com/Phirimhel/go-todo-app/internal/features/web/trasport/http"
 	"go.uber.org/zap"
 
 	_ "github.com/Phirimhel/go-todo-app/docs"
@@ -30,7 +33,6 @@ import (
 // @description 	This is a production-ready RESTful Todo API server written in Go.
 // @host 			127.0.0.1:8080
 // @BasePath 		/api/v1
-
 func main() {
 	// time zone
 	globalConfig := core_config.NewGlobalConfigMust()
@@ -50,9 +52,6 @@ func main() {
 	}
 	defer logger.CloseFile()
 
-	//timezone
-	logger.Debug("application time zone", zap.String("zone:", time.Local.String()))
-
 	// conn pool
 	logger.Debug("initializing postgres conection pool")
 	pool, err := core_pgx_pool.NewPgxConnectionPool(
@@ -63,6 +62,9 @@ func main() {
 		logger.Fatal("failed to init postgres conection pool:", zap.Error(err))
 	}
 	defer pool.Close()
+
+	//timezone
+	logger.Debug("application time zone", zap.String("zone:", time.Local.String()))
 
 	// users
 	logger.Debug("initializing features", zap.String("feature", "users"))
@@ -81,6 +83,12 @@ func main() {
 	statsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
 	statsService := statistic_service.NewStatisticsSercice(statsRepository)
 	statsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statsService)
+
+	//main page html
+	logger.Debug("initializing features", zap.String("feature", "web"))
+	webRepository := web_fs_repository.NewWebRepository()
+	webService := web_service.NewWebService(webRepository)
+	webHTTPHandler := web_transport_http.NewWebHTTPHandler(webService)
 
 	// server config
 	logger.Debug("initializing HTTP server")
@@ -101,15 +109,9 @@ func main() {
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(statsTransportHTTP.Routes()...)
-
-	// routers (V2 with middlerware)
-	apiVersionRouterV2 := core_http_server.NewApiVersionRouter(
-		core_http_server.ApiVersion2,
-		//core_http_midleware.RouterMockMiddleware(),
-	)
-	apiVersionRouterV2.RegisterRoutes(usersTransportHTTP.Routes()...)
-
-	httpServer.RegisterApiRoutes(apiVersionRouter, apiVersionRouterV2)
+	// server routes
+	httpServer.RegisterRoutes(webHTTPHandler.Routes()...)
+	httpServer.RegisterApiRoutes(apiVersionRouter)
 	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
