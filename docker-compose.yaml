@@ -5,6 +5,7 @@ services:
       dockerfile: ${PROJECT_ROOT}/cmd/todoapp/Dockerfile
     environment:
       - HTTP_ADDR=:8080
+      - HTTP_ALLOWED_ORIGINS=${HTTP_ALLOWED_ORIGINS}
 
       - TIME_ZONE=UTC
 

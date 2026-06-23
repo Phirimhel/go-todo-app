@@ -92,12 +92,12 @@ func main() {
 
 	// server config
 	logger.Debug("initializing HTTP server")
+	serverConfig := core_http_server.NewConfigMust()
 	httpServer := core_http_server.NewHTTPserver(
-		core_http_server.NewConfigMust(),
+		serverConfig,
 		logger,
-
 		// server middleware
-		core_http_midleware.CORS(),
+		core_http_midleware.CORS(serverConfig.AlllowedOrigins),
 		core_http_midleware.RequestID(),
 		core_http_midleware.Logger(logger),
 		core_http_midleware.Trace(),
