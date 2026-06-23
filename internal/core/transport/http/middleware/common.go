@@ -17,7 +17,6 @@ const requestIDHeader = "X-Request-ID"
 
 func CORS(allowedOriginsList []string) Middleware {
 
-	fmt.Println("CORS")
 	allowedOrigins := make(map[string]struct{})
 
 	for _, origin := range allowedOriginsList {

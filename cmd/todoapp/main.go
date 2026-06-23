@@ -93,6 +93,7 @@ func main() {
 	// server config
 	logger.Debug("initializing HTTP server")
 	serverConfig := core_http_server.NewConfigMust()
+	logger.Warn("allowed origins:", zap.Any("origins", serverConfig.AlllowedOrigins))
 	httpServer := core_http_server.NewHTTPserver(
 		serverConfig,
 		logger,
