@@ -37,6 +37,16 @@ func (r *ApiVersionRouter) RegisterRoutes(routes ...Route) {
 	}
 }
 
+func (s *ApiVersionRouter) RegisterPrivateRoutes(
+	autorisationMidleware core_http_midleware.Middleware,
+	routes []Route,
+) {
+	for _, route := range routes {
+		route.Middleware = append(route.Middleware, autorisationMidleware)
+		s.RegisterRoutes(route)
+	}
+}
+
 func (r *ApiVersionRouter) WithMiddleware() http.Handler {
 	return core_http_midleware.ChaneMiddleware(
 		r.ServeMux,

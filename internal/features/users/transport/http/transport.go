@@ -18,7 +18,17 @@ func NewUsersHTTPHandler(service users_service.UsersService) *UsersHTTPHandler {
 	}
 }
 
-func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
+func (h *UsersHTTPHandler) PublicRoutes() []core_http_server.Route {
+	return []core_http_server.Route{
+		{
+			Method: http.MethodGet,
+			Path:   "/users/login",
+			Hanler: h.LoginUser,
+		},
+	}
+}
+
+func (h *UsersHTTPHandler) PrivetRoutes() []core_http_server.Route {
 	return []core_http_server.Route{
 		{
 			Method: http.MethodPost,
@@ -31,11 +41,11 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Hanler: h.GetUsers,
 		},
 		{
-			Method: http.MethodGet,
-			Path:   "/users/{id}",
-			Hanler: h.GetUser,
+			Method:     http.MethodGet,
+			Path:       "/users/{id}",
+			Hanler:     h.GetUser,
 			Middleware: []core_http_midleware.Middleware{
-				core_http_midleware.MockMiddleware(),
+				//core_http_midleware.DummyMiddleware(),
 			},
 		},
 		{

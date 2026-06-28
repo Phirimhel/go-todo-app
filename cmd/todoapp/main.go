@@ -6,6 +6,7 @@ import (
 	"syscall"
 	"time"
 
+	core_auth "github.com/Phirimhel/go-todo-app/internal/core/auth"
 	core_config "github.com/Phirimhel/go-todo-app/internal/core/config"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
 	core_pgx_pool "github.com/Phirimhel/go-todo-app/internal/core/repo/posgres/pool/pgx"
@@ -66,6 +67,10 @@ func main() {
 	//timezone
 	logger.Debug("application time zone", zap.String("zone:", time.Local.String()))
 
+	// auth service
+	authConfig := core_auth.NewConfigMust()
+	authService := core_auth.NewAuthenticator(authConfig)
+
 	// users
 	logger.Debug("initializing features", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewRepository(pool)
@@ -97,7 +102,7 @@ func main() {
 	httpServer := core_http_server.NewHTTPserver(
 		serverConfig,
 		logger,
-		// server middleware
+		// common server middleware
 		core_http_midleware.CORS(serverConfig.AlllowedOrigins),
 		core_http_midleware.RequestID(),
 		core_http_midleware.Logger(logger),
@@ -105,14 +110,19 @@ func main() {
 		core_http_midleware.Panic(),
 	)
 
-	// routers (V1)
-	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
-	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
-	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
-	apiVersionRouter.RegisterRoutes(statsTransportHTTP.Routes()...)
-	// server routes
+	// router
+	v1Router := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
+	// routers public (V1)
+	v1Router.RegisterRoutes(usersTransportHTTP.PublicRoutes()...)
+	// routers private (V1)
+	jwtMiddleware := core_http_midleware.JWT(authService)
+	v1Router.RegisterPrivateRoutes(jwtMiddleware, usersTransportHTTP.PrivetRoutes())
+	v1Router.RegisterPrivateRoutes(jwtMiddleware, tasksTransportHTTP.PrivetRoutes())
+	v1Router.RegisterPrivateRoutes(jwtMiddleware, statsTransportHTTP.PrivetRoutes())
+
+	// server routes registration
 	httpServer.RegisterRoutes(webHTTPHandler.Routes()...)
-	httpServer.RegisterApiRoutes(apiVersionRouter)
+	httpServer.RegisterApiRoutes(v1Router)
 	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {

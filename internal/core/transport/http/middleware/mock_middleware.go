@@ -6,12 +6,12 @@ import (
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
 )
 
-func MockMiddleware() Middleware {
+func DummyMiddleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			ctx := r.Context()
-			log := core_logger.GetLoggerFromContext(ctx)
+			log := core_logger.MustGetLoggerFromContext(ctx)
 
 			log.Debug("<<< 🔵 handler in")
 			next.ServeHTTP(w, r)
@@ -21,12 +21,12 @@ func MockMiddleware() Middleware {
 
 }
 
-func RouterMockMiddleware() Middleware {
+func RouterDummyMiddleware() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			ctx := r.Context()
-			log := core_logger.GetLoggerFromContext(ctx)
+			log := core_logger.MustGetLoggerFromContext(ctx)
 
 			log.Debug("<<< 🟡 router in")
 			next.ServeHTTP(w, r)
@@ -40,7 +40,7 @@ func RouterMockServerMiddleware() Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			ctx := r.Context()
-			log := core_logger.GetLoggerFromContext(ctx)
+			log := core_logger.MustGetLoggerFromContext(ctx)
 
 			log.Debug("<<< 🟣 server in")
 			next.ServeHTTP(w, r)

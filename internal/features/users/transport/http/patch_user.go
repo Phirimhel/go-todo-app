@@ -74,7 +74,7 @@ type PatchedUserResponse UserDTOResponse
 // @Router       /users/{id} [patch]
 func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := core_logger.GetLoggerFromContext(ctx)
+	log := core_logger.MustGetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 	userID, err := core_http_utils.GetPathValue(r, "id")

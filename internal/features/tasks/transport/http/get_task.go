@@ -25,7 +25,7 @@ type GetTaskResponse TaskDtoResponse
 // @Router       /tasks/{id} [get]
 func (h *TasksHTTPHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := core_logger.GetLoggerFromContext(ctx)
+	log := core_logger.MustGetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 	taskID, err := core_http_utils.GetPathValue(r, "id")
