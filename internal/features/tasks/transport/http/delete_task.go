@@ -22,7 +22,7 @@ import (
 // @Router       /tasks/{id} [delete]
 func (h TasksHTTPHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := core_logger.GetLoggerFromContext(ctx)
+	log := core_logger.MustGetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 	log.Debug("invoice delete task handler")

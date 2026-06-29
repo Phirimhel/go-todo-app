@@ -15,7 +15,7 @@ func NewTasksHTTPHandler(service tasks_service.TasksService) *TasksHTTPHandler {
 	}
 }
 
-func (h *TasksHTTPHandler) Routes() []core_http_server.Route {
+func (h *TasksHTTPHandler) PrivetRoutes() []core_http_server.Route {
 	return []core_http_server.Route{
 		{
 			Method: "POST",

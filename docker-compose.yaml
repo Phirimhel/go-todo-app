@@ -18,6 +18,10 @@ services:
       - LOGGER_LEVEL=${LOGGER_LEVEL}
       - LOGGER_FOLDER=/app/out/logs
 
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_TOKEN_TTL=${JWT_TOKEN_TTL}
+
     volumes:
       - ${PROJECT_ROOT}/out/logs:/app/out/logs
 

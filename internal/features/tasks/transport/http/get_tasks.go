@@ -28,7 +28,7 @@ type GetTasksResponse []TaskDtoResponse
 // @Router       /tasks [get]
 func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := core_logger.GetLoggerFromContext(ctx)
+	log := core_logger.MustGetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 	log.Debug("ivoice get tasks handle")

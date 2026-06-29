@@ -74,7 +74,7 @@ type PatchTaskResponse TaskDtoResponse
 // @Router       /tasks/{id} [patch]
 func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := core_logger.GetLoggerFromContext(ctx)
+	log := core_logger.MustGetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 	log.Debug("invoice patch task handler")

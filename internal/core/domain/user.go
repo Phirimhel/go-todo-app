@@ -12,6 +12,7 @@ type User struct {
 	Version     int
 	FullName    string
 	PhoneNumber *string
+	Role        string
 }
 
 func NewUserUnitiliazied(FullName string, PhoneNumber *string) User {
@@ -20,15 +21,17 @@ func NewUserUnitiliazied(FullName string, PhoneNumber *string) User {
 		UnitiliaziedVersion,
 		FullName,
 		PhoneNumber,
+		UnitiliaziedRole,
 	)
 }
 
-func NewUser(ID, Version int, FullName string, PhoneNumber *string) User {
+func NewUser(ID, Version int, FullName string, PhoneNumber *string, role string) User {
 	return User{
 		ID:          UnitiliaziedID,
 		Version:     UnitiliaziedVersion,
 		FullName:    FullName,
 		PhoneNumber: PhoneNumber,
+		Role:        role,
 	}
 }
 

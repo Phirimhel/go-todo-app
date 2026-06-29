@@ -3,7 +3,9 @@ module github.com/Phirimhel/go-todo-app
 go 1.25.6
 
 require (
+	github.com/alexedwards/argon2id v1.0.0
 	github.com/go-playground/validator/v10 v10.30.2
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/kelseyhightower/envconfig v1.4.0

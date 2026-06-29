@@ -93,7 +93,7 @@ func Trace() Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			ctx := r.Context()
-			log := core_logger.GetLoggerFromContext(ctx)
+			log := core_logger.MustGetLoggerFromContext(ctx)
 
 			before := time.Now().UTC()
 
@@ -121,7 +121,7 @@ func Panic() Middleware {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			ctx := r.Context()
-			log := core_logger.GetLoggerFromContext(ctx)
+			log := core_logger.MustGetLoggerFromContext(ctx)
 			responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
 			defer func() {
@@ -141,7 +141,7 @@ func Panic() Middleware {
 // 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 // 			ctx := r.Context()
-// 			log := core_logger.GetLoggerFromContext(ctx)
+// 			log := core_logger.MustGetLoggerFromContext(ctx)
 
 // 			log.Debug("test_nidle_ware_IN")
 // 			next.ServeHTTP(w, r)
@@ -154,7 +154,7 @@ func Panic() Middleware {
 // 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 // 			ctx := r.Context()
-// 			log := core_logger.GetLoggerFromContext(ctx)
+// 			log := core_logger.MustGetLoggerFromContext(ctx)
 
 // 			log.Debug("test_nidle_ware_OUT")
 // 			next.ServeHTTP(w, r)
