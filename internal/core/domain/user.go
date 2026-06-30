@@ -8,30 +8,36 @@ import (
 )
 
 type User struct {
-	ID          int
-	Version     int
-	FullName    string
-	PhoneNumber *string
-	Role        string
+	ID           int
+	Version      int
+	FullName     string
+	PhoneNumber  *string
+	Role         string
+	Email        string
+	PasswordHash string
 }
 
-func NewUserUnitiliazied(FullName string, PhoneNumber *string) User {
+func NewUserUninitialized(FullName string, PhoneNumber *string, Email string, PasswordHash string) User {
 	return NewUser(
 		UnitiliaziedID,
 		UnitiliaziedVersion,
 		FullName,
 		PhoneNumber,
 		UnitiliaziedRole,
+		Email,
+		PasswordHash,
 	)
 }
 
-func NewUser(ID, Version int, FullName string, PhoneNumber *string, role string) User {
+func NewUser(ID, Version int, FullName string, PhoneNumber *string, role, email, passwordHash string) User {
 	return User{
-		ID:          UnitiliaziedID,
-		Version:     UnitiliaziedVersion,
-		FullName:    FullName,
-		PhoneNumber: PhoneNumber,
-		Role:        role,
+		ID:           UnitiliaziedID,
+		Version:      UnitiliaziedVersion,
+		FullName:     FullName,
+		PhoneNumber:  PhoneNumber,
+		Role:         role,
+		Email:        email,
+		PasswordHash: passwordHash,
 	}
 }
 

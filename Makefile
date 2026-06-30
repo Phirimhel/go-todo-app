@@ -76,11 +76,11 @@ migrate-up:
 migrate-down:
 	@make migrate-action action=down
 
-migrate-force:
+migrate-down-force:
 	@docker compose run --rm todoapp-postgres-migrate \
 		-path migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@todoapp-postgres:5432/${POSTGRES_DB}?sslmode=disable \
-		force 1
+		force 2
 
 migrate-action:
 	@if docker compose run --rm todoapp-postgres-migrate \

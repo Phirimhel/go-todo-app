@@ -12,12 +12,12 @@ func (r *usersRepository) CreateUser(ctx context.Context, user domain.User) (dom
 	defer cancel()
 
 	query := `
-		INSERT INTO todoapp.users (full_name, phone_number) 
-		VALUES ($1, $2)
-		RETURNING id, version, full_name, phone_number;
+		INSERT INTO todoapp.users (full_name, phone_number, email) 
+		VALUES ($1, $2, $3)
+		RETURNING id, version, full_name, phone_number, email;
 	`
 
-	row := r.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber)
+	row := r.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber, user.Email)
 
 	var userModel UserModel
 	if err := row.Scan(
@@ -25,6 +25,8 @@ func (r *usersRepository) CreateUser(ctx context.Context, user domain.User) (dom
 		&userModel.Version,
 		&userModel.FullName,
 		&userModel.PhoneNumber,
+		&userModel.Role,
+		&userModel.Email,
 	); err != nil {
 		return domain.User{}, fmt.Errorf("[repo]: scan model: %w", err)
 	}

@@ -13,7 +13,7 @@ type UsersService interface {
 	GetUser(ctx context.Context, id int) (domain.User, error)
 	DeleteUser(ctx context.Context, id int) error
 	PatchUser(ctx context.Context, id int, patch domain.UserPatch) (domain.User, error)
-	//LoginUser(ctx context.Context, userName, userPassword string) (string, error)
+	LoginUser(ctx context.Context, email, pasword string) (domain.User, error)
 }
 
 type userService struct {

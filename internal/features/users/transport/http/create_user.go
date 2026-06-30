@@ -12,6 +12,7 @@ import (
 // @name CreateUserRequest
 type CreateUserRequest struct {
 	FullName    string  `json:"full_name" validate:"required,min=3,max=100" example:"John Doe"`
+	Email       string  `json:"email" validate:"required" example:"example@gmial.com"`
 	PhoneNumber *string `json:"phone_number" validate:"omitempty,e164" example:"+35921234567"`
 }
 
@@ -54,5 +55,5 @@ func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func domainFromDTO(dto CreateUserRequest) domain.User {
-	return domain.NewUserUnitiliazied(dto.FullName, dto.PhoneNumber)
+	return domain.NewUserUninitialized(dto.FullName, dto.PhoneNumber, dto.Email, "")
 }

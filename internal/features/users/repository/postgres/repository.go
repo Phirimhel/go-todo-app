@@ -13,6 +13,7 @@ type UsersRepository interface {
 	GetUser(ctx context.Context, id int) (domain.User, error)
 	DeleteUser(ctx context.Context, id int) error
 	PatchUser(ctx context.Context, id int, user domain.User) (domain.User, error)
+	GetUserBy(ctx context.Context, email, fullName, phoneNumber *string) (domain.User, error)
 }
 
 type usersRepository struct {

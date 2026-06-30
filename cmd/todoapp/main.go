@@ -6,6 +6,7 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/Phirimhel/go-todo-app/docs"
 	core_auth "github.com/Phirimhel/go-todo-app/internal/core/auth"
 	core_config "github.com/Phirimhel/go-todo-app/internal/core/config"
 	core_logger "github.com/Phirimhel/go-todo-app/internal/core/logger"
@@ -24,9 +25,7 @@ import (
 	web_fs_repository "github.com/Phirimhel/go-todo-app/internal/features/web/repository/file_system"
 	web_service "github.com/Phirimhel/go-todo-app/internal/features/web/service"
 	web_transport_http "github.com/Phirimhel/go-todo-app/internal/features/web/trasport/http"
-	"go.uber.org/zap"
-
-	_ "github.com/Phirimhel/go-todo-app/docs"
+	zap "go.uber.org/zap"
 )
 
 // @title 			Golang Todo API
@@ -68,6 +67,7 @@ func main() {
 	logger.Debug("application time zone", zap.String("zone:", time.Local.String()))
 
 	// auth service
+	logger.Debug("initializing features", zap.String("feature", "asuthenticator"))
 	authConfig := core_auth.NewConfigMust()
 	authService := core_auth.NewAuthenticator(authConfig)
 
@@ -75,7 +75,7 @@ func main() {
 	logger.Debug("initializing features", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewRepository(pool)
 	userService := users_service.NewUserService(usersRepository)
-	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(userService)
+	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(userService, authService)
 
 	//tasks
 	logger.Debug("initializing features", zap.String("feature", "tasks"))
@@ -115,11 +115,9 @@ func main() {
 	// routers public (V1)
 	v1Router.RegisterRoutes(usersTransportHTTP.PublicRoutes()...)
 	// routers private (V1)
-	jwtMiddleware := core_http_midleware.JWT(authService)
-	v1Router.RegisterPrivateRoutes(jwtMiddleware, usersTransportHTTP.PrivetRoutes())
-	v1Router.RegisterPrivateRoutes(jwtMiddleware, tasksTransportHTTP.PrivetRoutes())
-	v1Router.RegisterPrivateRoutes(jwtMiddleware, statsTransportHTTP.PrivetRoutes())
-
+	v1Router.RegisterRoutes(usersTransportHTTP.PrivatRoutes()...)
+	v1Router.RegisterRoutes(tasksTransportHTTP.PrivatRoutes()...)
+	v1Router.RegisterRoutes(statsTransportHTTP.PrivatRoutes()...)
 	// server routes registration
 	httpServer.RegisterRoutes(webHTTPHandler.Routes()...)
 	httpServer.RegisterApiRoutes(v1Router)

@@ -29,7 +29,9 @@ func (rw *ResponseWriter) Write(bytes []byte) (int, error) {
 	if err != nil {
 		rw.statusCode = rw.GetStatusCodeOrPanic()
 	}
-	rw.statusCode = http.StatusOK
+	if rw.statusCode == statusCodeUnitialized {
+		rw.statusCode = http.StatusOK
+	}
 	return bytesWrited, err
 }
 
