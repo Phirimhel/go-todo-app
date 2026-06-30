@@ -1,22 +1,26 @@
 package tasks_transport_http
 
 import (
+	core_auth "github.com/Phirimhel/go-todo-app/internal/core/auth"
+	core_http_midleware "github.com/Phirimhel/go-todo-app/internal/core/transport/http/middleware"
 	core_http_server "github.com/Phirimhel/go-todo-app/internal/core/transport/http/server"
 	tasks_service "github.com/Phirimhel/go-todo-app/internal/features/tasks/service"
 )
 
 type TasksHTTPHandler struct {
-	tasksService tasks_service.TasksService
+	tasksService  tasks_service.TasksService
+	authenticator core_auth.Authenticator
 }
 
-func NewTasksHTTPHandler(service tasks_service.TasksService) *TasksHTTPHandler {
+func NewTasksHTTPHandler(service tasks_service.TasksService, authenticator core_auth.Authenticator) *TasksHTTPHandler {
 	return &TasksHTTPHandler{
-		tasksService: service,
+		tasksService:  service,
+		authenticator: authenticator,
 	}
 }
 
 func (h *TasksHTTPHandler) PrivatRoutes() []*core_http_server.Route {
-	return []*core_http_server.Route{
+	routes := []*core_http_server.Route{
 		{
 			Method: "POST",
 			Path:   "/tasks",
@@ -43,4 +47,13 @@ func (h *TasksHTTPHandler) PrivatRoutes() []*core_http_server.Route {
 			Hanler: h.PatchTask,
 		},
 	}
+
+	for _, route := range routes {
+		route.Middleware = append(
+			route.Middleware,
+			core_http_midleware.JWT(h.authenticator),
+		)
+	}
+
+	return routes
 }

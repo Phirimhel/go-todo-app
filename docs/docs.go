@@ -429,6 +429,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/login": {
+            "post": {
+                "description": "Get token for user by email and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Login user / get token",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_users_transport_http.LoginUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User successfully authenticated",
+                        "schema": {
+                            "$ref": "#/definitions/internal_features_users_transport_http.LoginUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized (wrong password/email)",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "get": {
                 "description": "Get user by ID",
@@ -815,9 +867,14 @@ const docTemplate = `{
         "internal_features_users_transport_http.CreateUserRequest": {
             "type": "object",
             "required": [
+                "email",
                 "full_name"
             ],
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@gmial.com"
+                },
                 "full_name": {
                     "type": "string",
                     "maxLength": 100,
@@ -833,6 +890,10 @@ const docTemplate = `{
         "internal_features_users_transport_http.CreateUserResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@mail.com"
+                },
                 "full_name": {
                     "type": "string",
                     "example": "John Doe"
@@ -845,9 +906,41 @@ const docTemplate = `{
                     "type": "string",
                     "example": "+35921234567"
                 },
-                "version": {
-                    "type": "integer",
-                    "example": 23
+                "role": {
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
+        "internal_features_users_transport_http.LoginUserRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3,
+                    "example": "example@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 4,
+                    "example": "aboba@$_boba"
+                }
+            }
+        },
+        "internal_features_users_transport_http.LoginUserResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/internal_features_users_transport_http.UserDTOResponse"
                 }
             }
         },
@@ -867,6 +960,10 @@ const docTemplate = `{
         "internal_features_users_transport_http.PatchedUserResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@mail.com"
+                },
                 "full_name": {
                     "type": "string",
                     "example": "John Doe"
@@ -879,15 +976,19 @@ const docTemplate = `{
                     "type": "string",
                     "example": "+35921234567"
                 },
-                "version": {
-                    "type": "integer",
-                    "example": 23
+                "role": {
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         },
         "internal_features_users_transport_http.UserDTOResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@mail.com"
+                },
                 "full_name": {
                     "type": "string",
                     "example": "John Doe"
@@ -900,9 +1001,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "+35921234567"
                 },
-                "version": {
-                    "type": "integer",
-                    "example": 23
+                "role": {
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         }

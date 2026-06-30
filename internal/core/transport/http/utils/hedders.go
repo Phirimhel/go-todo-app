@@ -11,11 +11,11 @@ import (
 func GetBearerToken(headers http.Header) (string, error) {
 	authHeader := headers.Get("Authorization")
 	if authHeader == "" {
-		return "", fmt.Errorf("missing Authorization header  %w", core_errors.ErrInvalidArgument)
+		return "", fmt.Errorf("missing 'Authorization' header: %w", core_errors.ErrInvalidArgument)
 	}
 	token, found := strings.CutPrefix(authHeader, "Bearer ")
 	if !found {
-		return "", fmt.Errorf("invalid Authorization format %w", core_errors.ErrInvalidArgument)
+		return "", fmt.Errorf("invalid 'Authorization' format %w", core_errors.ErrInvalidArgument)
 	}
 
 	return token, nil

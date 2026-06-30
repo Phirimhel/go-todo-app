@@ -28,8 +28,6 @@ func (h *UsersHTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	log := core_logger.MustGetLoggerFromContext(ctx)
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, w)
 
-	//claims := core_auth.MustGetClaimsFromContext(ctx)
-
 	limit, offset, err := getLimitOffsetQueryParams(r)
 	if err != nil {
 		responseHandler.ErrorResponse(err, "failed to get limit/offser query params")
