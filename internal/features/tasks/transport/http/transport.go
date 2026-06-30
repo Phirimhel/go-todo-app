@@ -15,8 +15,8 @@ func NewTasksHTTPHandler(service tasks_service.TasksService) *TasksHTTPHandler {
 	}
 }
 
-func (h *TasksHTTPHandler) PrivetRoutes() []core_http_server.Route {
-	return []core_http_server.Route{
+func (h *TasksHTTPHandler) PrivatRoutes() []*core_http_server.Route {
+	return []*core_http_server.Route{
 		{
 			Method: "POST",
 			Path:   "/tasks",

@@ -15,8 +15,8 @@ func NewStatisticsHTTPHandler(service statistic_service.StatisticService) *Stati
 	}
 }
 
-func (h *StatisticsHTTPHandler) PrivetRoutes() []core_http_server.Route {
-	return []core_http_server.Route{
+func (h *StatisticsHTTPHandler) PrivatRoutes() []*core_http_server.Route {
+	return []*core_http_server.Route{
 		{
 			Method: "GET",
 			Path:   "/statistics",

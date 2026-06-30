@@ -12,7 +12,7 @@ func (r *usersRepository) GetUsers(ctx context.Context, limit, offset *int) ([]d
 	defer cancel()
 
 	query := `
-		SELECT id, Version, full_name, phone_number FROM todoapp.users
+		SELECT id, Version, full_name, phone_number, role, email FROM todoapp.users
 		ORDER BY id ASC
 		LIMIT $1 
 		OFFSET $2;
@@ -26,17 +26,19 @@ func (r *usersRepository) GetUsers(ctx context.Context, limit, offset *int) ([]d
 	var userModels []UserModel
 	for rows.Next() {
 
-		var model UserModel
+		var userModel UserModel
 		if err := rows.Scan(
-			&model.ID,
-			&model.Version,
-			&model.FullName,
-			&model.PhoneNumber,
+			&userModel.ID,
+			&userModel.Version,
+			&userModel.FullName,
+			&userModel.PhoneNumber,
+			&userModel.Role,
+			&userModel.Email,
 		); err != nil {
 			return nil, fmt.Errorf("[repo]: scan model of select users rows: %w", err)
 		}
 
-		userModels = append(userModels, model)
+		userModels = append(userModels, userModel)
 	}
 
 	if err := rows.Err(); err != nil {

@@ -29,22 +29,22 @@ func NewApiVersionRouter(version ApiVersion, middleware ...core_http_midleware.M
 	}
 }
 
-func (r *ApiVersionRouter) RegisterRoutes(routes ...Route) {
+func (r *ApiVersionRouter) RegisterRoutes(routes ...*Route) {
 	for _, route := range routes {
 		pattern := fmt.Sprintf("%s %s", route.Method, route.Path)
-
 		r.ServeMux.Handle(pattern, route.WithMiddleware())
 	}
 }
 
 func (s *ApiVersionRouter) RegisterPrivateRoutes(
 	autorisationMidleware core_http_midleware.Middleware,
-	routes []Route,
+	routes ...*Route,
 ) {
 	for _, route := range routes {
 		route.Middleware = append(route.Middleware, autorisationMidleware)
-		s.RegisterRoutes(route)
 	}
+
+	s.RegisterRoutes(routes...)
 }
 
 func (r *ApiVersionRouter) WithMiddleware() http.Handler {

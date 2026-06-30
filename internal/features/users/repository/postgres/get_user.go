@@ -27,6 +27,8 @@ func (r *usersRepository) GetUser(ctx context.Context, id int) (domain.User, err
 		&userModel.Version,
 		&userModel.FullName,
 		&userModel.PhoneNumber,
+		&userModel.Role,
+		&userModel.Email,
 	); err != nil {
 
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {

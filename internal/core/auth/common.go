@@ -6,7 +6,7 @@ import (
 	"github.com/alexedwards/argon2id"
 )
 
-func (s *authenticator) HashPassword(password string) (string, error) {
+func HashPassword(password string) (string, error) {
 	hash, err := argon2id.CreateHash(password, argon2id.DefaultParams)
 	if err != nil {
 		return "", fmt.Errorf("[hash pasword]: faled to has pasword: %w", err)
@@ -15,7 +15,7 @@ func (s *authenticator) HashPassword(password string) (string, error) {
 	return hash, nil
 }
 
-func (s *authenticator) CheckPasswordHash(password, hash string) (bool, error) {
+func CheckPasswordHash(password, hash string) (bool, error) {
 
 	isValid, err := argon2id.ComparePasswordAndHash(password, hash)
 	if err != nil {
