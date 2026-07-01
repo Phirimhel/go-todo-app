@@ -19,6 +19,18 @@ type LoginUserResponse struct {
 	User  UserDTOResponse `json:"user"`
 }
 
+// LoginUser godoc
+// @Summary      Login user / get token
+// @Description  Get token for user by email and password
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request body      LoginUserRequest  true  "User credentials"
+// @Success      200     {object}  LoginUserResponse  "User successfully authenticated"
+// @Failure      400     {object}  core_http_response.ErrorResponse  "Bad request"
+// @Failure      401     {object}  core_http_response.ErrorResponse  "Unauthorized (wrong password/email)"
+// @Failure      500     {object}  core_http_response.ErrorResponse  "Internal server error"
+// @Router       /users/login [post]
 func (h *UsersHTTPHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.MustGetLoggerFromContext(ctx)

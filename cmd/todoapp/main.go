@@ -81,7 +81,7 @@ func main() {
 	logger.Debug("initializing features", zap.String("feature", "tasks"))
 	tasksRepository := tasks_repository.NewTasksRepository(pool)
 	tasksService := tasks_service.NewTasksService(tasksRepository)
-	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService)
+	tasksTransportHTTP := tasks_transport_http.NewTasksHTTPHandler(tasksService, authService)
 
 	//statistics
 	logger.Debug("initializing features", zap.String("feature", "statistics"))

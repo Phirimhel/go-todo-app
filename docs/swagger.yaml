@@ -170,6 +170,9 @@ definitions:
     type: object
   internal_features_users_transport_http.CreateUserRequest:
     properties:
+      email:
+        example: example@gmial.com
+        type: string
       full_name:
         example: John Doe
         maxLength: 100
@@ -179,10 +182,14 @@ definitions:
         example: "+35921234567"
         type: string
     required:
+    - email
     - full_name
     type: object
   internal_features_users_transport_http.CreateUserResponse:
     properties:
+      email:
+        example: example@mail.com
+        type: string
       full_name:
         example: John Doe
         type: string
@@ -192,9 +199,32 @@ definitions:
       phone_number:
         example: "+35921234567"
         type: string
-      version:
-        example: 23
-        type: integer
+      role:
+        example: admin
+        type: string
+    type: object
+  internal_features_users_transport_http.LoginUserRequest:
+    properties:
+      email:
+        example: example@gmail.com
+        maxLength: 100
+        minLength: 3
+        type: string
+      password:
+        example: aboba@$_boba
+        maxLength: 128
+        minLength: 4
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  internal_features_users_transport_http.LoginUserResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/internal_features_users_transport_http.UserDTOResponse'
     type: object
   internal_features_users_transport_http.PatchUserRequest:
     properties:
@@ -207,6 +237,9 @@ definitions:
     type: object
   internal_features_users_transport_http.PatchedUserResponse:
     properties:
+      email:
+        example: example@mail.com
+        type: string
       full_name:
         example: John Doe
         type: string
@@ -216,12 +249,15 @@ definitions:
       phone_number:
         example: "+35921234567"
         type: string
-      version:
-        example: 23
-        type: integer
+      role:
+        example: admin
+        type: string
     type: object
   internal_features_users_transport_http.UserDTOResponse:
     properties:
+      email:
+        example: example@mail.com
+        type: string
       full_name:
         example: John Doe
         type: string
@@ -231,9 +267,9 @@ definitions:
       phone_number:
         example: "+35921234567"
         type: string
-      version:
-        example: 23
-        type: integer
+      role:
+        example: admin
+        type: string
     type: object
 host: 127.0.0.1:8080
 info:
@@ -628,6 +664,40 @@ paths:
           schema:
             $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
       summary: Update user
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Get token for user by email and password
+      parameters:
+      - description: User credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User successfully authenticated
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.LoginUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "401":
+          description: Unauthorized (wrong password/email)
+          schema:
+            $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Phirimhel_go-todo-app_internal_core_transport_http_response.ErrorResponse'
+      summary: Login user / get token
       tags:
       - users
 swagger: "2.0"
